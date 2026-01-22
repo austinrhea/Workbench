@@ -23,6 +23,15 @@ Output: `## Implementation Phase`
 
 ### 3. Handle Deviations
 
+**Deviation Rules** (from `agent_docs/workflow.md`):
+
+| Condition | Action |
+|-----------|--------|
+| Minor syntax/typo fixes | Auto-fix, continue |
+| Missing import/dependency | Add it, continue |
+| Small refactor needed (<5 lines) | Do it, continue |
+| Architectural change needed | **STOP**, explain, get approval |
+
 If something doesn't work as planned:
 1. Stop immediately
 2. Explain what happened
@@ -69,4 +78,10 @@ What's coming in the next phase
 
 ## Exit Criteria
 
-All plan steps complete and verified. Summary of what was done provided.
+All plan steps complete. Before marking done, verify each deliverable passes **Goal-Backward Verification**:
+
+1. **Exists**: The thing was created/modified
+2. **Substantive**: It does what it's supposed to do
+3. **Wired**: It's connected to the rest of the system
+
+Summary of what was done provided.

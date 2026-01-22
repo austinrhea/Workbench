@@ -289,8 +289,11 @@ How to know it's complete.
 
 | Command | Purpose |
 |---------|---------|
+| `/workflow` | Entry point, routes to appropriate phase |
 | `/research` | Map problem space before changes |
 | `/plan` | Create implementation checklist |
 | `/implement` | Execute plan incrementally |
 | `/debug` | Diagnose before fixing |
 | `/checkpoint` | Save state for breaks |
+| `/summarize` | Prepare context for compaction |
+| `/docs` | Update README commands table from source |

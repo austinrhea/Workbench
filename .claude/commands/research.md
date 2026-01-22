@@ -73,3 +73,5 @@ Run `/checkpoint` if context is heavy or taking a break.
 ## Exit Criteria
 
 Can explain the problem space and proposed approach without hand-waving.
+
+**Gate**: "Here's what I found. Ready to plan?"

@@ -79,3 +79,5 @@ Run `/checkpoint` if context is heavy or taking a break.
 ## Exit Criteria
 
 Plan is approved by human before proceeding to implementation.
+
+**Gate**: "Here's the plan. Approve to proceed?"

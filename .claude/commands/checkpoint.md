@@ -22,9 +22,15 @@ Review what's been accomplished:
 **Merge updates into existing STATE.md** rather than overwriting:
 - Update YAML frontmatter fields (status, phase, context_percent, last_updated)
 - Append new decisions to `## Decisions`
+- **Prune stale decisions** (see rules below)
 - Update `## Blockers` (add new, mark resolved with [x])
 - Update `## Key Files` (add new discoveries)
 - Replace `## Next Steps` with current guidance
+
+**Decision pruning rules** — delete decisions when:
+- Now encoded in commands (e.g., "Added X to /implement" → it's in the command now)
+- Project-wide facts, not active choices (move to `agent_docs/`)
+- The task they relate to is complete
 
 If STATE.md doesn't exist, create with this structure:
 

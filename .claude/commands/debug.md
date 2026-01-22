@@ -77,3 +77,5 @@ Run `/checkpoint` if context is heavy or taking a break.
 ## Exit Criteria
 
 Root cause identified with evidence. Fix approach clear and approved.
+
+**Gate**: "Here's the diagnosis. Approve fix approach?"
