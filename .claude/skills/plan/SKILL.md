@@ -1,3 +1,10 @@
+---
+name: plan
+description: Create specific implementation steps for review. Use after research is complete and before writing code.
+disable-model-invocation: true
+allowed-tools: Read, Write, Glob, Grep
+---
+
 # Planning Phase
 
 Create a specific implementation plan for review.
@@ -41,7 +48,7 @@ Output: `## Planning Phase`
 
 ### 4. Create Step-by-Step Plan
 
-Format as checklist with verification:
+Use the [plan format template](templates/plan-format.md):
 
 ```markdown
 ## Phase 1: [Name]

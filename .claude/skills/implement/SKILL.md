@@ -1,3 +1,10 @@
+---
+name: implement
+description: Execute approved plan incrementally with verification at each step. Use after plan is approved.
+disable-model-invocation: true
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task
+---
+
 # Implementation Phase
 
 Execute the approved plan incrementally.
@@ -21,7 +28,7 @@ Output: `## Implementation Phase`
 
 ### 2. Maintain Context Hygiene
 - Keep output concise
-- Use `run_silent` patterns for test/build (see `scripts/run_silent.sh`)
+- Use `run_silent` patterns for test/build (see [run_silent.sh](scripts/run_silent.sh))
 - Summarize verbose command output
 - Flag if context is getting heavy (approaching 60%+)
 - Run `/checkpoint` after each verified phase
@@ -59,7 +66,8 @@ If errors occur:
 
 ### 4. Report Progress
 
-After each phase:
+Use the [progress report template](templates/progress-report.md):
+
 ```markdown
 ## Phase N Complete
 

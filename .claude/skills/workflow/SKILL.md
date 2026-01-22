@@ -1,3 +1,10 @@
+---
+name: workflow
+description: Entry point for task execution. Routes to research, plan, implement, or debug based on task type and existing state. Use when starting new work or resuming from a break.
+disable-model-invocation: true
+allowed-tools: Read, Write, Glob, Skill
+---
+
 # Workflow
 
 Entry point for task execution. Routes to appropriate phase based on task type and existing state.
@@ -78,7 +85,7 @@ Ready to proceed?
 
 **Skip this step for quick fixes** — they complete in one turn and don't need state tracking.
 
-**For all other task types**, write STATE.md with initial task state:
+**For all other task types**, use the [state initialization template](templates/state-init.md):
 
 ```yaml
 ---
@@ -108,7 +115,7 @@ This ensures state is captured even if user exits mid-task.
 
 ### 5. Execute or Hand Off
 
-- If user confirms: invoke the recommended phase command
+- If user confirms: invoke the recommended phase skill
 - If user chooses different path: follow their direction
 - If task is trivial (quick fix): proceed directly with implementation
 
@@ -120,4 +127,4 @@ This ensures state is captured even if user exits mid-task.
 
 ## Exit Criteria
 
-User is routed to appropriate phase command, or task is completed (quick fix).
+User is routed to appropriate phase skill, or task is completed (quick fix).

@@ -1,3 +1,12 @@
+---
+name: debug
+description: Diagnose bugs systematically before proposing fixes. Use when something is broken, failing, erroring, or not working as expected.
+disable-model-invocation: true
+context: fork
+agent: Explore
+allowed-tools: Read, Grep, Glob, Bash, Task
+---
+
 # Debug Phase
 
 Diagnose systematically before proposing fixes.
@@ -36,6 +45,8 @@ Output: `## Debug Phase`
 - Stop when root cause is confirmed
 
 ### 5. Produce Diagnosis
+
+Use the [diagnosis template](templates/diagnosis.md):
 
 ```markdown
 ## Symptom

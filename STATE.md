@@ -1,24 +1,33 @@
 ---
-task: "Design token-saving strategies using hooks and skills"
+task: "Migrate commands to skills with enriched structure"
 status: complete
 phase: idle
-context_percent: 32
+context_percent: 50
 last_updated: 2026-01-22
 ---
 
 ## Decisions
-- Three token-saving layers: hooks (auto-enforcement), skills (user-invoked), subagents (discovery isolation)
-- Already have: run_silent.sh, retry-limits.sh, metrics persistence
-- User wants: auto-summarize at thresholds, auto-format all edits, output truncation
+- Removed `.claude/commands/` — skills are sole source now
+- Use `context: fork` for research + debug only
+- Centralize hook scripts, skill-specific for skill scripts
+- Combine checkpoint + cost for context health checks
+- SessionStart/Stop/PreCompact hooks not available; used UserPromptSubmit instead
 
 ## Blockers
 [None]
 
 ## Key Files
-- `agent_docs/integrations.md:166-230` — hook configuration patterns
-- `agent_docs/context.md:92-121` — subagent model selection for cost
-- `agent_docs/testing.md:14-51` — run_silent pattern
-- `.claude/settings.json:36-60` — current hook config
+- `PLAN.md` — Full implementation plan
+- `.claude/skills/` — 10 skills created
+- `agent_docs/integrations.md` — Updated with skill development docs
+
+## Progress
+- [x] Phase 1: Core structure
+- [x] Phase 2: Phase skills (R→P→I→Debug)
+- [x] Phase 3: Context management
+- [x] Phase 4: Utilities
+- [x] Phase 5: Hooks
+- [x] Phase 6: Documentation
 
 ## Next Steps
-Task complete. Token-saving hooks and skills implemented.
+Migration complete. Verify with `ls .claude/skills/*/SKILL.md | wc -l` (should be 10).

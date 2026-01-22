@@ -31,7 +31,7 @@ Default: `pytest` if no framework specified.
 Source and use the run_silent wrapper:
 
 ```bash
-source scripts/run_silent.sh
+source .claude/skills/implement/scripts/run_silent.sh
 run_silent_with_count "tests" "pytest -x tests/" "pytest"
 ```
 

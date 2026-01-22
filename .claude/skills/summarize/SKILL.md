@@ -1,6 +1,6 @@
 # Summarize
 
-Prepare context for compaction using FILTER→CHUNK→STITCH→VERIFY pattern.
+Prepare context for compaction using FILTER-CHUNK-STITCH-VERIFY pattern.
 
 Run this before `/compact` to ensure critical state survives.
 
@@ -26,10 +26,10 @@ Identify only decision-critical information:
 
 ### 2. CHUNK — Structure for Parsing
 
-**Read current metrics** from `.claude/metrics.json` (updated by status line):
+**Read current metrics** from `.claude/metrics.json`:
 
 ```bash
-cat .claude/metrics.json | jq '.used_percentage'
+cat .claude/metrics.json 2>/dev/null | jq -r '.used_percentage // "unknown"'
 ```
 
 Write STATE.md with YAML frontmatter:
@@ -39,7 +39,7 @@ Write STATE.md with YAML frontmatter:
 task: "Brief task description"
 status: in_progress | blocked | complete
 phase: research | plan | implement | debug
-context_percent: [from .claude/metrics.json used_percentage]
+context_percent: [from metrics]
 last_updated: [today's date]
 ---
 

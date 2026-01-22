@@ -283,16 +283,30 @@ For teams, audit trails, complex workflows. Build custom MCP server with Postgre
 | Days | Medium | Memory MCP |
 | Weeks+ | High | External DB |
 
-## Adding Commands
+## Skills
 
-Commands live in `.claude/commands/*.md`. They're invoked via `/command-name`.
+Skills are the preferred way to add custom commands. They live in `.claude/skills/*/SKILL.md` and support richer structure than plain commands.
 
-### Template
+### Directory Structure
+
+```
+.claude/skills/
+├── skill-name/
+│   ├── SKILL.md           # Main skill definition
+│   ├── scripts/           # Shell scripts for deterministic operations
+│   │   └── helper.sh
+│   ├── templates/         # Output format templates
+│   │   └── output.md
+│   └── references/        # Supporting documentation
+│       └── guide.md
+```
+
+### SKILL.md Template
 
 ```markdown
-# Command Name
+# Skill Name
 
-Brief description.
+Brief description (shown in `/help`).
 
 ## Task
 $ARGUMENTS
@@ -300,9 +314,6 @@ $ARGUMENTS
 ## Instructions
 
 ### 1. First Step
-- Details
-
-### 2. Second Step
 - Details
 
 ## Constraints
@@ -319,18 +330,50 @@ How to know it's complete.
 - Use `$ARGUMENTS` for user input
 - Follow Research → Plan → Implement where applicable
 - Include verification criteria
-- Keep focused (one responsibility per command)
+- Keep focused (one responsibility per skill)
+- Reference templates/scripts with relative paths: `[template](templates/output.md)`
 
-### Existing Commands
+### Supporting Files
 
-| Command | Purpose |
-|---------|---------|
+| Directory | Purpose | Example |
+|-----------|---------|---------|
+| `scripts/` | Deterministic operations | `parse-state.sh`, `run_silent.sh` |
+| `templates/` | Output format templates | `findings.md`, `plan-format.md` |
+| `references/` | Detailed guidance | `decomposition.md` |
+
+Scripts should be executable and work standalone for testing.
+
+### When to Use context: fork
+
+Use forked context for exploration-heavy skills where intermediate results shouldn't pollute the main conversation:
+
+- **Research**: Exploring unfamiliar code, many file reads
+- **Debug**: Diagnosis that may involve dead ends
+
+Don't fork for skills that need to modify shared state (plan, implement, checkpoint).
+
+### Migration from Commands
+
+Skills and commands coexist. To migrate:
+
+1. Create `.claude/skills/name/SKILL.md` with command content
+2. Add supporting files if needed
+3. Keep `.claude/commands/name.md` as thin redirect (optional)
+
+Both `/name` invocations work identically.
+
+### Existing Skills
+
+| Skill | Purpose |
+|-------|---------|
 | `/workflow` | Entry point, routes to appropriate phase |
 | `/research` | Map problem space before changes |
 | `/plan` | Create implementation checklist |
 | `/implement` | Execute plan incrementally |
 | `/debug` | Diagnose before fixing |
-| `/checkpoint` | Save state for breaks |
+| `/checkpoint` | Save state with context health check |
 | `/summarize` | Prepare context for compaction |
-| `/docs` | Update README commands table from source |
-| `/cost` | Check context utilization and thresholds |
+| `/cost` | Quick context utilization check |
+| `/docs` | Update README from skills |
+| `/test` | Run tests with minimal output |
+
