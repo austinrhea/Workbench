@@ -1,49 +1,45 @@
 ---
-task: "Create workflow example documentation — ServiceNow → Snowflake pipeline"
-objective: "Produce a comprehensive example doc demonstrating the workflow system with realistic ETL scenario"
-status: complete
-phase: idle
-path:
-context_percent: 70
+task: "Create debug workflow example documentation — Python debugging scenario"
+objective: "Produce example doc demonstrating /debug path with realistic Python bug scenario"
+status: in_progress
+phase: implement
+path: research,plan,implement
+context_percent: 15
 last_updated: 2026-01-22
 ---
 
 ## Original Prompt
-> I need you to create a doc for an example of using this pipeline to ingested from a ServiceNow instance into snowflake via a Matillion job and provides the user with a summary of the table. you dont need to write the code just more or less a plan as an example of the workflow somewhere. You can make the prompt a little better for the sake of the example include code examples in the doc and examples of the workflow and how it processes each step. start from scratch
+> based on the previous STATE.md now do the same for an example of debuging some python code in a repository where this is installed
 
 ## Scope
-**Doing**: Create example documentation with workflow walkthrough, code samples, step-by-step process
-**Not doing**: Building actual pipeline, connecting to real systems
+**Doing**: Create example documentation showing debug workflow with Python scenario
+**Not doing**: Actual debugging, real repository changes
 
 ## Progress
-- [x] Research: What makes a good workflow example doc
-- [x] Research: ServiceNow REST API patterns
-- [x] Research: Matillion ETL components
-- [x] Research: Snowflake VARIANT/FLATTEN/MERGE
-- [x] Plan: Document structure and content outline (6 phases, 10 steps)
+- [x] Research: Debug skill structure, realistic Python bug scenarios
+- [x] Plan: Document structure and content outline (5 phases, 12 steps)
 - [x] Implement: Write the markdown file
 
 ## Decisions
-- Document goes in `examples/workflow-pipeline-example.md`
-- Show full workflow lifecycle with STATE.md snapshots at each phase
-- Include working SQL/API code examples
-- Improved prompt for the example scenario
+- Use FastAPI + requests external API call as bug scenario
+- Show intermittent timeout bug with missing error handling
+- Demonstrates full 5-step debug process
+- Structure matches pipeline example exactly (parallel sections)
+- Path: debug → implement (not research → plan → implement)
 
 ## Learnings
-- Workflow orchestration works via Skill tool after removing `disable-model-invocation`
-- STATE.md snapshots at each phase show state evolution clearly
-- Real code examples (SQL, API) make the example more useful
+[None yet]
 
 ## Blockers
 [None]
 
 ## Key Files
-- `examples/workflow-pipeline-example.md` — the deliverable (658 lines)
-- `agent_docs/workflow.md` — R→P→I concepts source
-- `.claude/skills/workflow/SKILL.md` — orchestration reference
+- `.claude/skills/debug/SKILL.md` — debug workflow reference
+- `.claude/skills/debug/templates/diagnosis.md` — output template
+- `examples/workflow-pipeline-example.md` — structure to match
 
 ## Checkpoint
-Task complete. Document verified.
+Fresh start.
 
 ## Next Steps
-Consider adding link to example from README.md
+Starting research phase
