@@ -1,34 +1,73 @@
 #!/bin/bash
-# Check STATE.md for stale or in-progress state
-# Called from UserPromptSubmit hook or manually at session start
+# Inject STATE.md into context when resuming after a break
+# Called from UserPromptSubmit hook
+#
+# Works with two formats:
+#
+# 1. Workflow-managed (full YAML frontmatter):
+#    ---
+#    task: "..."
+#    status: in_progress
+#    phase: implement
+#    ...
+#    ---
+#
+# 2. Simple (minimal or no frontmatter):
+#    ---
+#    status: active
+#    ---
+#    ## Context
+#    Whatever you want to persist
+#
+# Behavior:
+# - If no STATE.md: silent exit
+# - If status is idle/complete: silent exit
+# - If status is active/in_progress OR no status field: check staleness
+# - If stale (file not modified in >1 hour): output STATE.md content
+# - If fresh: silent exit (already in session)
 
 STATE_FILE="STATE.md"
+STALE_THRESHOLD_SECONDS=3600  # 1 hour
 
 if [[ ! -f "$STATE_FILE" ]]; then
     exit 0
 fi
 
-# Parse frontmatter
+# Parse status from frontmatter (if present)
 status=$(grep -E "^status:" "$STATE_FILE" | head -1 | sed 's/status: *//')
-last_updated=$(grep -E "^last_updated:" "$STATE_FILE" | head -1 | sed 's/last_updated: *//')
-task=$(grep -E "^task:" "$STATE_FILE" | head -1 | sed 's/task: *"//' | sed 's/"$//')
 
-# Check if stale (older than 24 hours)
-if [[ -n "$last_updated" ]]; then
-    # Convert date to epoch (handles YYYY-MM-DD format)
-    if [[ "$(uname)" == "Darwin" ]]; then
-        state_epoch=$(date -j -f "%Y-%m-%d" "$last_updated" +%s 2>/dev/null || echo 0)
-    else
-        state_epoch=$(date -d "$last_updated" +%s 2>/dev/null || echo 0)
-    fi
-    now_epoch=$(date +%s)
-    age_hours=$(( (now_epoch - state_epoch) / 3600 ))
-
-    if [[ $age_hours -gt 24 && "$status" == "in_progress" ]]; then
-        echo "⚠️  STATE.md is ${age_hours}h old with status: $status"
-        echo "   Task: $task"
-        echo "   Consider: /workflow to review state"
-    fi
+# Skip if explicitly idle or complete
+if [[ "$status" == "idle" || "$status" == "complete" ]]; then
+    exit 0
 fi
+
+# Check file modification time for staleness
+if [[ "$(uname)" == "Darwin" ]]; then
+    file_mtime=$(stat -f %m "$STATE_FILE")
+else
+    file_mtime=$(stat -c %Y "$STATE_FILE")
+fi
+now=$(date +%s)
+age_seconds=$((now - file_mtime))
+age_hours=$((age_seconds / 3600))
+age_minutes=$((age_seconds / 60))
+
+# If file was modified recently, we're in an active session
+if [[ $age_seconds -lt $STALE_THRESHOLD_SECONDS ]]; then
+    exit 0
+fi
+
+# Stale and not idle - inject into context
+if [[ $age_hours -ge 1 ]]; then
+    echo "## Resuming Session (${age_hours}h since last update)"
+else
+    echo "## Resuming Session (${age_minutes}m since last update)"
+fi
+echo ""
+echo "STATE.md content:"
+echo ""
+echo '```'
+cat "$STATE_FILE"
+echo '```'
 
 exit 0

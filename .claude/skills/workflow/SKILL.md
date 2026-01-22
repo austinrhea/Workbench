@@ -146,7 +146,24 @@ When all phases complete:
 - Don't skip assessment — even obvious tasks benefit from explicit routing
 - Wait for approval at each phase boundary (gates are mandatory)
 - Keep STATE.md as source of truth
-- If context exceeds 60%, suggest `/checkpoint` before next phase
+
+### Context Hygiene (Mandatory)
+
+**Pre-flight check**: Before invoking any phase skill, run:
+
+```bash
+.claude/skills/shared/scripts/read-metrics.sh used_percentage
+```
+
+| Utilization | Action |
+|-------------|--------|
+| < 50% | Proceed normally |
+| 50-60% | Warn user, proceed with caution |
+| 60%+ | **GATE**: Run `/checkpoint`, then `/compact` before proceeding |
+
+**Hard gate at 60%**: Do not invoke the next phase skill until context is below 60%. This is not a suggestion — degraded context means degraded work quality.
+
+**Update STATE.md `context_percent`**: After each phase completion, record current utilization from metrics.
 
 ## Exit Criteria
 

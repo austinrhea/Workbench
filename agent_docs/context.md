@@ -165,6 +165,38 @@ Rules:
 - Read at session start to restore context
 - Delete resolved items aggressively
 
+### Automatic Session Reload
+
+The `session-init.sh` hook (UserPromptSubmit) automatically injects STATE.md into context when resuming after a break:
+
+| Condition | Behavior |
+|-----------|----------|
+| No STATE.md | Silent |
+| `status: idle` or `complete` | Silent |
+| `status: active/in_progress` + stale (>1h) | Inject content |
+| Fresh file (<1h) | Silent (already in session) |
+
+**Staleness** uses file modification time, not `last_updated` field.
+
+**Two formats supported**:
+
+1. Simple (general context):
+```markdown
+## Session Notes
+Whatever you want to persist
+```
+
+2. Workflow-managed (full structure):
+```yaml
+---
+task: "..."
+status: in_progress
+phase: implement
+---
+```
+
+To suppress injection: set `status: idle` or delete the file.
+
 ## Compaction
 
 When context grows heavy, use `/compact`. This preserves:

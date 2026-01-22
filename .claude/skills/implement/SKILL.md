@@ -26,10 +26,23 @@ Output: `## Implementation Phase`
 - Mark steps complete as you go
 
 ### 2. Maintain Context Hygiene
+
+**Check metrics** after every 3-5 steps:
+
+```bash
+.claude/skills/shared/scripts/read-metrics.sh used_percentage
+```
+
+| Utilization | Action |
+|-------------|--------|
+| < 50% | Continue |
+| 50-60% | Warn user, consider `/checkpoint` |
+| 60%+ | **STOP**: Run `/summarize` then `/compact` before continuing |
+
+**Output practices**:
 - Keep output concise
 - Use `run_silent` patterns for test/build (see [run_silent.sh](scripts/run_silent.sh))
 - Summarize verbose command output
-- Flag if context is getting heavy (approaching 60%+)
 - Run `/checkpoint` after each verified phase
 
 **Fail-fast flags** (stop at first failure):
