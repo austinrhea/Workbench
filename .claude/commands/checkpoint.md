@@ -111,3 +111,15 @@ See `context.md` "Dumb Zone" for full symptom list.
 ## Exit Criteria
 
 STATE.md saved. Session can resume from cold start with full context.
+
+### Context Recommendation (based on current %)
+
+After checkpoint, suggest next action based on utilization:
+
+| Utilization | Recommendation |
+|-------------|----------------|
+| <50% | Continue freely |
+| 50-70% | "Consider `/compact` before next task" |
+| >70% | "Run `/summarize` then `/compact` or start fresh with `/clear`" |
+
+If task is complete and context >50%, proactively suggest compaction.
