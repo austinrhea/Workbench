@@ -27,9 +27,9 @@ fi
 used_int=${used%.*}
 
 if (( used_int >= CRITICAL_THRESHOLD )); then
-    echo "[context: ${used_int}% - critical] Run /summarize then /compact" >&2
+    echo "[context: ${used_int}% - critical] Run /summarize first, then /compact" >&2
 elif (( used_int >= WARNING_THRESHOLD )); then
-    echo "[context: ${used_int}% - high] Consider /compact soon" >&2
+    echo "[context: ${used_int}% - high] Consider /summarize then /compact soon" >&2
 fi
 
 exit 0

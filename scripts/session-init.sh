@@ -43,24 +43,29 @@ else
     context_percent=50
 fi
 
+# Extract common fields
+task=$(grep -E "^task:" "$STATE_FILE" | head -1 | sed 's/task: *"//' | sed 's/"$//')
+phase=$(grep -E "^phase:" "$STATE_FILE" | head -1 | sed 's/phase: *//')
+next_steps=$(grep -A1 "^## Next Steps" "$STATE_FILE" | tail -1)
+
 # SCENARIO 1: Post-compact recovery
 # Fresh context + active state = likely just compacted, inject immediately
 if [[ $context_percent -lt $FRESH_CONTEXT_THRESHOLD ]]; then
-    task=$(grep -E "^task:" "$STATE_FILE" | head -1 | sed 's/task: *"//' | sed 's/"$//')
-    phase=$(grep -E "^phase:" "$STATE_FILE" | head -1 | sed 's/phase: *//')
-
     echo "## State Recovery (post-compact)"
     echo ""
     echo "**Task**: ${task:-[unspecified]}"
     echo "**Phase**: ${phase:-[unspecified]}"
     echo "**Status**: ${status:-in_progress}"
+    if [[ -n "$next_steps" && "$next_steps" != "## Next Steps" ]]; then
+        echo "**Last activity**: ${next_steps}"
+    fi
     echo ""
     echo "Full state:"
     echo '```'
     cat "$STATE_FILE"
     echo '```'
     echo ""
-    echo "Continue from where you left off."
+    echo "**To continue**: Type \`/workflow continue\` or describe what you'd like to do next."
     exit 0
 fi
 
@@ -82,9 +87,6 @@ if [[ $age_seconds -lt $STALE_THRESHOLD_SECONDS ]]; then
 fi
 
 # Stale and active - inject for session resume
-task=$(grep -E "^task:" "$STATE_FILE" | head -1 | sed 's/task: *"//' | sed 's/"$//')
-phase=$(grep -E "^phase:" "$STATE_FILE" | head -1 | sed 's/phase: *//')
-
 if [[ $age_hours -ge 1 ]]; then
     echo "## Resuming Session (${age_hours}h since last update)"
 else
@@ -94,12 +96,15 @@ echo ""
 echo "**Task**: ${task:-[unspecified]}"
 echo "**Phase**: ${phase:-[unspecified]}"
 echo "**Status**: ${status:-in_progress}"
+if [[ -n "$next_steps" && "$next_steps" != "## Next Steps" ]]; then
+    echo "**Last activity**: ${next_steps}"
+fi
 echo ""
 echo "Full state:"
 echo '```'
 cat "$STATE_FILE"
 echo '```'
 echo ""
-echo "Continue from where you left off."
+echo "**To continue**: Type \`/workflow continue\` or describe what you'd like to do next."
 
 exit 0

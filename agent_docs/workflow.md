@@ -99,9 +99,31 @@ Task: Add logout button
 
 Don't mark complete until all three levels pass.
 
-## When to Skip
+## Quick Fix Mode
 
-Simple tasks (single-file changes, obvious fixes) don't need the full workflow. Use judgment—if you're about to make changes you don't fully understand, stop and research.
+Simple tasks (single-file changes, obvious fixes) skip the full workflow:
+
+| Task Type | What Happens |
+|-----------|--------------|
+| Typo fix, add log, rename variable | Direct implementation, no STATE.md |
+| Single-file bug fix | Debug → fix, minimal gates |
+| Clear, scoped change | Skip research phase |
+
+**Quick fix criteria**: Task is obvious, low-risk, and doesn't require understanding new code.
+
+## Automation Features
+
+The workflow includes several automatic behaviors:
+
+| Feature | Trigger | Benefit |
+|---------|---------|---------|
+| **Auto-checkpoint** | After each gate approval | No manual `/checkpoint` needed |
+| **Smart exit defaults** | Task completion | Suggests clear/compact based on git state |
+| **Post-compact recovery** | Fresh context + active STATE.md | Auto-injects state after `/compact` |
+| **Session resume** | Stale STATE.md (>1h) | Prompts continuation on return |
+| **Context warnings** | 60%+ utilization | Suggests `/summarize` then `/compact` |
+
+**Pre-compact checklist**: Run `bash scripts/pre-compact.sh` before `/compact` to verify STATE.md is current.
 
 ## Phase-Boundary Approval Gates
 

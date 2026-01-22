@@ -55,12 +55,14 @@ Options:
 
 ### 2. Assess Task Type
 
-| Signals | Task Type | Path |
-|---------|-----------|------|
-| "not working", "error", "bug", "broken" | Bug | `debug` (then implement if needed) |
-| "add", "implement", "create", "build" + unclear scope | Feature | `research,plan,implement` |
-| Clear, small, single-file change | Quick fix | (no path, direct implementation) |
-| "refactor", "change", "update" + multi-file | Modification | `research,plan,implement` |
+| Signals | Task Type | Path | Gates |
+|---------|-----------|------|-------|
+| "not working", "error", "bug", "broken" | Bug | `debug` (then implement if needed) | Normal |
+| "add", "implement", "create", "build" + unclear scope | Feature | `research,plan,implement` | Normal |
+| Clear, small, single-file change | **Quick fix** | (none - direct implementation) | **Minimal** |
+| "refactor", "change", "update" + multi-file | Modification | `research,plan,implement` | Normal |
+
+**Quick fix mode**: For obvious, low-risk changes (typo fix, add log statement, rename variable), skip research/plan phases entirely. Execute directly, verify, done. No STATE.md needed.
 
 ### 3. Present Recommendation
 
@@ -122,17 +124,17 @@ After user approves, execute this loop:
 
 ```
 while path has remaining phases:
-    1. Pre-flight: check context utilization
+    1. Pre-flight: check context utilization (automatic)
     2. Invoke current phase skill (using Skill tool)
     3. Phase skill runs, ends with gate question
     4. User approves (or redirects)
-    5. Run /checkpoint (mandatory between phases)
+    5. AUTO: Run /checkpoint (no user action needed)
     6. Update STATE.md: advance phase, update context_percent
     7. If more phases remain, continue loop
     8. If user redirects, update path and continue
 ```
 
-**Mandatory checkpoint**: Run `/checkpoint` after each phase approval. This captures phase-specific learnings in STATE.md before context compaction may be needed.
+**Auto-checkpoint**: Checkpoint runs automatically after each gate approval — no user action required. This captures phase-specific learnings before context compaction may be needed.
 
 **Invoking phase skills**:
 - `/research` — exploration, returns findings
@@ -154,10 +156,20 @@ When all phases complete:
 - Clear `path:`
 - Run `/checkpoint` to save final state
 
-**Exit lifecycle** — offer context options:
+**Exit lifecycle** — smart defaults based on state:
+
+First, check git state: `git status --short`
+
+| Condition | Default | Prompt |
+|-----------|---------|--------|
+| Uncommitted changes | Suggest commit | "Uncommitted changes detected. Commit first?" |
+| Clean git + high context (>50%) | Suggest clear | "Task complete. `/clear` recommended for fresh start." |
+| Clean git + low context (<50%) | Suggest continue | "Task complete. Context is light — continue or `/clear`?" |
 
 ```markdown
 ## Task Complete
+
+[Smart suggestion based on above]
 
 **Options:**
 1. **Clear** — fresh context for unrelated task (`/clear`)
@@ -167,7 +179,7 @@ When all phases complete:
 Which would you like?
 ```
 
-**Why offer choice**: User may want follow-ups ("actually, can you also add X?"). Auto-clearing would be surprising.
+**Why smart defaults**: Reduces decision fatigue while preserving user control. Uncommitted work should be committed before clearing.
 
 ## Constraints
 

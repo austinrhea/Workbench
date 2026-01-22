@@ -1,27 +1,48 @@
 #!/bin/bash
-# Check if STATE.md should be updated before compaction
-# Run manually before /compact, or integrate with future PreCompact hook
+# Pre-compact checklist - run before /compact to preserve state
+# Reminds user to save state so it survives compaction
 
 STATE_FILE="STATE.md"
 METRICS_FILE=".claude/metrics.json"
 
-# Check if STATE.md exists
+echo "## Pre-Compact Checklist"
+echo ""
+
+# Check 1: STATE.md exists
 if [[ ! -f "$STATE_FILE" ]]; then
-    echo "⚠️  No STATE.md found. Run /checkpoint or /summarize before compacting."
+    echo "❌ No STATE.md found"
+    echo "   → Run /summarize to create state file before compacting"
+    echo ""
     exit 0
 fi
 
-# Check if STATE.md is recent
+# Check 2: STATE.md is recent
+stale=false
 if [[ -f "$METRICS_FILE" ]]; then
-    metrics_time=$(stat -c %Y "$METRICS_FILE" 2>/dev/null || stat -f %m "$METRICS_FILE" 2>/dev/null)
-    state_time=$(stat -c %Y "$STATE_FILE" 2>/dev/null || stat -f %m "$STATE_FILE" 2>/dev/null)
+    if [[ "$(uname)" == "Darwin" ]]; then
+        metrics_time=$(stat -f %m "$METRICS_FILE")
+        state_time=$(stat -f %m "$STATE_FILE")
+    else
+        metrics_time=$(stat -c %Y "$METRICS_FILE")
+        state_time=$(stat -c %Y "$STATE_FILE")
+    fi
 
-    # If metrics updated more recently than STATE.md by >5 minutes, warn
     diff=$(( metrics_time - state_time ))
     if [[ $diff -gt 300 ]]; then
-        echo "⚠️  STATE.md may be stale (metrics updated since last checkpoint)"
-        echo "   Run /summarize to capture current state before /compact"
+        stale=true
     fi
 fi
+
+if [[ "$stale" == "true" ]]; then
+    echo "⚠️  STATE.md may be stale (>5 min since last update)"
+    echo "   → Run /summarize to capture current progress"
+else
+    echo "✓ STATE.md exists and is recent"
+fi
+
+# Check 3: Remind about recovery
+echo ""
+echo "After /compact, your state will auto-reload if task was in_progress."
+echo "Run /summarize now to ensure nothing is lost."
 
 exit 0
