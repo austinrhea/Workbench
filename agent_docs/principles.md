@@ -15,6 +15,21 @@ Production agents are **deterministic code with strategic LLM steps**, not purel
 | Error retry limit | 2-3 consecutive |
 | Context utilization target | 40-60% |
 
+## Temperature & Sampling
+
+| Task Type | Temperature | Notes |
+|-----------|-------------|-------|
+| Code generation | 0.0-0.3 | Deterministic, reproducible |
+| Planning/analysis | 0.3-0.5 | Slight creativity, mostly focused |
+| Brainstorming | 0.7-1.0 | Diverse options, exploration |
+| Structured output (JSON) | 0.0 | Must be parseable |
+
+**Rules**:
+- Lower temperature for anything that needs to be correct/reproducible
+- Higher temperature only when you want variety
+- For agents: default to low (0.0-0.3) since you want consistent behavior
+- If using tools: temperature 0 prevents hallucinated tool calls
+
 ## The 12 Factors
 
 ### 1. Natural Language → Structured Output

@@ -103,10 +103,48 @@ Don't mark complete until all three levels pass.
 
 Simple tasks (single-file changes, obvious fixes) don't need the full workflow. Use judgment—if you're about to make changes you don't fully understand, stop and research.
 
+## Phase-Boundary Approval Gates
+
+Explicit approval points prevent runaway execution:
+
+| Boundary | Gate |
+|----------|------|
+| Research → Plan | "Here's what I found. Ready to plan?" |
+| Plan → Implement | "Here's the plan. Approve to proceed?" |
+| Implement → Done | "Implementation complete. Please verify." |
+
+**Why gates matter**:
+- Catches misunderstandings before they cascade
+- Gives human leverage at high-impact moments
+- Prevents "helpful" over-execution
+
+**Gate format**:
+```markdown
+## Ready for [Next Phase]
+
+### Summary
+What was accomplished
+
+### Key Decisions
+Choices made and why
+
+### Risks/Concerns
+What might go wrong
+
+### Approval Request
+Specific ask: "Approve plan?" / "Continue to phase 2?"
+```
+
 ## Anti-Patterns
 
-- **Chatbot iteration**: Back-and-forth without structure wastes context
-- **Vibe coding**: Jumping to implementation without understanding
-- **Passive engagement**: Expecting automation without active participation
-- **Monolithic agents**: One agent for 50+ step workflows
-- **Running forever**: Unbounded execution without checkpoints
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Chatbot iteration | Back-and-forth wastes context | Use R→P→I structure |
+| Vibe coding | Implementation without understanding | Research first |
+| Passive engagement | Expecting full automation | Active participation |
+| Monolithic agents | 50+ steps = lost focus | 3-10 steps per agent |
+| Running forever | No checkpoints | Bounded cycles |
+| Overbaking | Adding unrequested features | Stick to spec |
+| Sycophancy loop | Agreeing vs being correct | Prioritize accuracy |
+| Spec drift | Changing requirements mid-task | Checkpoint, re-plan |
+| Context hoarding | Keeping everything "just in case" | Aggressive pruning |

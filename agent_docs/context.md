@@ -111,9 +111,16 @@ Better than `/clear` when you need continuity.
 
 ### Compaction Artifact Format
 
-When writing summaries, use this structure:
+When writing summaries, use this structure with YAML frontmatter:
 
-```yaml
+```markdown
+---
+task: "Brief task description"
+status: in_progress | blocked | complete
+context_percent: 45
+last_updated: 2024-03-15
+---
+
 ## Task(s)
 - [x] Completed item
 - [ ] In progress item
@@ -124,9 +131,35 @@ When writing summaries, use this structure:
 ## Learnings
 Important patterns, bugs, or insights
 
+## Checkpoint
+Last known good state (can rollback here)
+
 ## Next Steps
 Guidance for continuing
 ```
+
+### Checkpoint/Rollback Pattern
+
+Create explicit save points during complex work:
+
+```markdown
+## Checkpoint: Pre-refactor (2024-03-15 14:30)
+- All tests passing
+- Feature X working
+- Files: src/auth.ts, src/api.ts
+
+## Changes Since Checkpoint
+- Modified auth flow
+- Added new endpoint
+
+## Rollback Command
+git checkout abc123 -- src/auth.ts src/api.ts
+```
+
+When to checkpoint:
+- Before risky changes
+- After each working phase
+- Before context gets heavy (>50%)
 
 ## When to Clear
 
