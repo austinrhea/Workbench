@@ -191,8 +191,19 @@ Add to `.claude/settings.json`:
 |-----------|---------------------|
 | Block destructive ops | PreToolUse: reject `--force`, `--hard`, `rm -rf /` |
 | Auto-format on edit | PostToolUse: prettier/gofmt after Edit |
-| Log failures | PostToolUse: echo on non-zero exit |
 | Retry limits | PostToolUse: track consecutive failures, block at 3 |
+
+### Retry Limits Script
+
+The `scripts/retry-limits.sh` script implements failure tracking:
+
+```bash
+# Tracks failures in /tmp/claude-failures-$$ (session-specific)
+# Resets counter on success
+# After 3 consecutive failures: exits with code 2 (blocks)
+```
+
+This aligns with `/implement.md`: "After 2-3 consecutive failures, escalate to human."
 
 ## Persistence
 

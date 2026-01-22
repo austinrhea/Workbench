@@ -52,8 +52,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if [ \"$EXIT_CODE\" -ne 0 ]; then echo \"[HOOK] Command exited with code $EXIT_CODE\" >&2; fi'",
-            "description": "Log command failures"
+            "command": "./scripts/retry-limits.sh",
+            "description": "Track consecutive failures, block at 3"
           }
         ]
       }

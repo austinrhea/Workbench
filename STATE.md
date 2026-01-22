@@ -1,5 +1,5 @@
 ---
-task: "Evaluate agent_docs for remaining workflow improvements"
+task: "Implement Phase 2 items from agent_docs gap analysis"
 status: complete
 phase: idle
 context_percent: 0
