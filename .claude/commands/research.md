@@ -9,6 +9,10 @@ $ARGUMENTS
 
 Output: `## Research Phase`
 
+**State**: At phase start, update STATE.md:
+- Set `phase: research`
+- Set `status: in_progress`
+
 ### 1. Study the Relevant Context
 - Read all user-mentioned files completely (no limit/offset)
 - Study existing patterns in the codebase
@@ -60,15 +64,16 @@ Break into composable research areas. Use subagents for parallel exploration:
 - Maximum 125 characters for quoted source material
 - Verify claims before stating them
 
-### 6. Checkpoint
+### 6. Incremental State Updates
 
-Update STATE.md incrementally:
-- Set `phase: research`
-- Append key findings to `## Decisions`
-- Add discovered files to `## Key Files`
+Update STATE.md **during research** when:
+- Significant pattern or constraint discovered → add to `## Decisions`
+- Key file identified → add to `## Key Files`
+- Blocker found → add to `## Blockers`
+
+**At research completion**:
 - Update `## Next Steps` with research conclusions
-
-Run `/checkpoint` if context is heavy or taking a break.
+- Run `/checkpoint` if context is heavy or taking a break
 
 ## Exit Criteria
 

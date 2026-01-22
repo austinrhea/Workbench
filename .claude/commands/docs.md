@@ -9,6 +9,8 @@ $ARGUMENTS
 
 Output: `## Docs`
 
+**State**: This is a utility command. If currently in a workflow task, don't modify STATE.md phase. If idle, no update needed.
+
 ### 1. Scan Commands
 
 Read all files in `.claude/commands/*.md` and extract:

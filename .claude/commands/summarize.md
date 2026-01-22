@@ -11,6 +11,8 @@ $ARGUMENTS
 
 Output: `## Summarize`
 
+**State**: Preserve current phase in STATE.md. This command prepares for compaction, not phase transition.
+
 ### 1. FILTER — Extract Critical State
 
 Identify only decision-critical information:

@@ -9,6 +9,9 @@ $ARGUMENTS
 
 Output: `## Planning Phase`
 
+**State**: At phase start, update STATE.md:
+- Set `phase: plan`
+
 ### 1. Gather Context
 - Read files identified in research
 - Verify understanding is current

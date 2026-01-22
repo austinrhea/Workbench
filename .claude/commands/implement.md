@@ -9,6 +9,9 @@ $ARGUMENTS
 
 Output: `## Implementation Phase`
 
+**State**: At phase start, update STATE.md:
+- Set `phase: implement`
+
 ### 1. Execute One Step at a Time
 - Complete step fully before moving to next
 - Verify each step per the plan's criteria

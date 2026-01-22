@@ -9,6 +9,10 @@ $ARGUMENTS
 
 Output: `## Debug Phase`
 
+**State**: At phase start, update STATE.md:
+- Set `phase: debug`
+- Set `status: in_progress`
+
 ### 1. Reproduce
 - Confirm the failure exists
 - Identify exact error message/behavior
