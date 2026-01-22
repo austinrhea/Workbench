@@ -172,6 +172,32 @@ while True:
         └────── Deterministic Orchestration ───┘
 ```
 
+### Wave-Based Execution
+
+Group parallelizable tasks by dependency:
+
+```
+Wave 1 (parallel):     Wave 2 (parallel):     Wave 3 (sequential):
+┌─────────┐            ┌─────────┐            ┌─────────┐
+│ Search  │            │ Edit A  │            │ Build   │
+│ files   │            └─────────┘            └────┬────┘
+└─────────┘            ┌─────────┐                 │
+┌─────────┐            │ Edit B  │            ┌────▼────┐
+│ Read    │      →     └─────────┘      →     │ Test    │
+│ config  │            ┌─────────┐            └────┬────┘
+└─────────┘            │ Edit C  │                 │
+┌─────────┐            └─────────┘            ┌────▼────┐
+│ Check   │                                   │ Deploy  │
+│ deps    │                                   └─────────┘
+└─────────┘
+```
+
+Rules:
+- Tasks with no dependencies run in parallel
+- Tasks depending on previous results wait
+- Build/test/deploy are sequential checkpoints
+- Up to 500 parallel reads/searches, but only 1 build at a time
+
 ### 11. Trigger from Anywhere
 
 Support multiple entry points:

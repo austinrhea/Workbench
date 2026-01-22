@@ -67,6 +67,38 @@ When something fails:
 
 Don't: unlimited retry loops, swallow errors, keep all failed attempts in context.
 
+## Deviation Rules
+
+When implementation diverges from plan:
+
+| Rule | Condition | Action |
+|------|-----------|--------|
+| Rule 1 | Minor syntax/typo fixes | Auto-fix, continue |
+| Rule 2 | Missing import/dependency | Add it, continue |
+| Rule 3 | Small refactor needed | Do it if <5 lines, continue |
+| Rule 4 | Architectural change needed | **STOP**, explain, get approval |
+
+**The key distinction**: Rules 1-3 are mechanical adjustments. Rule 4 requires human judgment because it changes the plan's assumptions.
+
+## Goal-Backward Verification
+
+Before marking any task complete, verify in three levels:
+
+1. **Exists**: The thing was created/modified
+2. **Substantive**: It does what it's supposed to do
+3. **Wired**: It's connected to the rest of the system
+
+Example:
+```
+Task: Add logout button
+
+1. Exists: Button component created? ✓
+2. Substantive: Clicking it clears auth state? ✓
+3. Wired: Navigation shows it? Routing handles post-logout? ✓
+```
+
+Don't mark complete until all three levels pass.
+
 ## When to Skip
 
 Simple tasks (single-file changes, obvious fixes) don't need the full workflow. Use judgment—if you're about to make changes you don't fully understand, stop and research.

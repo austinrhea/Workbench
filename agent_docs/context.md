@@ -24,6 +24,18 @@ Context engineering—structuring all inputs (prompts, history, external data)�
 | Your CLAUDE.md budget | ~100-150 instructions | What remains |
 | Recommended CLAUDE.md | <60 lines | HumanLayer's actual |
 | Maximum CLAUDE.md | <300 lines | Absolute ceiling |
+| MCP server tool tax | ~10k tokens each | Hidden context cost |
+
+## Quality Degradation Curve
+
+Context utilization directly affects output quality:
+
+| Utilization | Quality | Behavior |
+|-------------|---------|----------|
+| 0-30% | Peak | Full instruction following, accurate recall |
+| 30-50% | Good | Reliable performance, occasional minor misses |
+| 50-70% | Degrading | Starts forgetting constraints, needs reminders |
+| 70%+ | Poor | Hallucinations, lost focus, "dumb zone" behaviors |
 
 ## The "Dumb Zone"
 
@@ -59,6 +71,33 @@ Benefits:
 - Can fork thread at any point
 
 To pause: save conversation state. To resume: deserialize and continue.
+
+### STATE.md Pattern
+
+For cross-session persistence, maintain a living memory file:
+
+```markdown
+# STATE.md (<100 lines)
+
+## Current Focus
+What we're working on right now
+
+## Recent Decisions
+- Decision 1: rationale
+- Decision 2: rationale
+
+## Blockers
+- [ ] Unresolved issue
+
+## Key Files
+- `path/to/file.ts:42` — why it matters
+```
+
+Rules:
+- Keep under 100 lines (forces prioritization)
+- Update at session end or major milestones
+- Read at session start to restore context
+- Delete resolved items aggressively
 
 ## Compaction
 
