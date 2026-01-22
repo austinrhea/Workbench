@@ -19,16 +19,16 @@ The `/workflow` command assesses your task and routes to the appropriate phase:
 <!-- COMMANDS:START -->
 | Command | Description |
 |---------|-------------|
-| `/checkpoint` | Save current state for session breaks or complex work |
-| `/cost` | Check context utilization and token costs |
-| `/debug` | Diagnose systematically before proposing fixes |
-| `/docs` | Update README.md commands table from source |
-| `/implement` | Execute the approved plan incrementally |
-| `/plan` | Create a specific implementation plan for review |
-| `/research` | Before proposing changes, understand the problem space |
-| `/summarize` | Prepare context for compaction using FILTER→CHUNK→STITCH→VERIFY pattern |
+| `/checkpoint` | Save current state for session breaks with context health check |
+| `/cost` | Quick context health check (see `/checkpoint` for full state management) |
+| `/debug` | Diagnose bugs systematically before proposing fixes |
+| `/docs` | Update README.md commands table from skills |
+| `/implement` | Execute approved plan incrementally with verification |
+| `/plan` | Create specific implementation steps for review |
+| `/research` | Understand problem space before proposing changes |
+| `/summarize` | Prepare context for compaction (FILTER-CHUNK-STITCH-VERIFY) |
 | `/test` | Run tests with context-efficient output |
-| `/workflow` | Entry point for task execution |
+| `/workflow` | Entry point — routes to appropriate phase based on task |
 <!-- COMMANDS:END -->
 
 ## Documentation
