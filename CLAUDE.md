@@ -37,6 +37,8 @@ Use subagents for discovery to keep main context focused on implementation.
 
 Direct technical engagement. No padding. Present alternatives with criteria when meaningful. Take clear paths when obvious.
 
+Imperative voice. No filler ("Let me", "Just", "Simply"). No enthusiasm markers. See `agent_docs/style.md`.
+
 ## Extended Guidance
 
 See `agent_docs/`:
