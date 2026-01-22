@@ -44,3 +44,4 @@ See `agent_docs/`:
 - `testing.md` — Output filtering, run_silent patterns
 - `context.md` — Subagents, compaction, state management
 - `principles.md` — 12-factor agent principles
+- `integrations.md` — MCP, hooks, status line, persistence
