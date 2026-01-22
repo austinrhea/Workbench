@@ -10,7 +10,9 @@ $ARGUMENTS
 Output: `## Implementation Phase`
 
 **State**: At phase start, update STATE.md:
+- Set `task:` from $ARGUMENTS (if STATE.md is idle/complete or task is "None")
 - Set `phase: implement`
+- Set `status: in_progress`
 
 ### 1. Execute One Step at a Time
 - Complete step fully before moving to next

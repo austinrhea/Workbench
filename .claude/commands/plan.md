@@ -10,7 +10,9 @@ $ARGUMENTS
 Output: `## Planning Phase`
 
 **State**: At phase start, update STATE.md:
+- Set `task:` from $ARGUMENTS (if STATE.md is idle/complete or task is "None")
 - Set `phase: plan`
+- Set `status: in_progress`
 
 ### 1. Gather Context
 - Read files identified in research
