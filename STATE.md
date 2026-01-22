@@ -1,5 +1,5 @@
 ---
-task: "Incremental STATE.md updates and parking"
+task: "Test all commands work correctly"
 status: complete
 phase: idle
 context_percent: 0
@@ -11,6 +11,7 @@ last_updated: 2026-01-22
 - Parked status added: preserves interrupted tasks
 - Incremental updates: phase commands append to sections, don't overwrite
 - RLM-aligned pattern: treat STATE.md as queryable state, not full replacement
+- Test checkpoint: incremental append works
 
 ## Blockers
 None
@@ -23,4 +24,4 @@ None
 - `.claude/commands/debug.md` — incremental checkpoint step
 
 ## Next Steps
-Ready for new tasks. Run `/workflow <task>` to begin.
+All tests passed. Ready for new tasks.
