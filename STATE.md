@@ -1,8 +1,8 @@
 ---
-task: "Add metrics persistence for context health checks"
+task: "Evaluate agent_docs for pipeline improvements"
 status: complete
 phase: idle
-context_percent: 37
+context_percent: 45
 last_updated: 2026-01-22
 ---
 

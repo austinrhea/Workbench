@@ -107,4 +107,27 @@ All plan steps complete. Before marking done, verify each deliverable passes **G
 2. **Substantive**: It does what it's supposed to do
 3. **Wired**: It's connected to the rest of the system
 
-Summary of what was done provided.
+### Verification Output Format
+
+When implementation is complete, output:
+
+```markdown
+## Implementation Complete
+
+### Deliverables
+- [x] [What was created/modified]
+
+### Verification Checklist
+| Check | Status | Evidence |
+|-------|--------|----------|
+| Exists | ✓ | [file:line or description] |
+| Substantive | ✓ | [test result or behavior confirmed] |
+| Wired | ✓ | [how it connects to system] |
+
+### Manual Testing Required
+- [ ] [Specific steps for human to verify]
+
+Ready for review.
+```
+
+**Gate**: "Implementation complete. Please verify."

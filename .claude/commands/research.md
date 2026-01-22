@@ -23,6 +23,7 @@ Output: `## Research Phase`
 Break into composable research areas. Use subagents for parallel exploration:
 - Up to 500 parallel subagents for searches/reads
 - Keep parent context focused on synthesis
+- Use `model: haiku` for simple searches, `model: opus` for complex analysis (see `context.md`)
 
 ### 3. Map the Territory
 - Identify files, modules, and dependencies involved

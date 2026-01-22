@@ -102,6 +102,24 @@ Use subagents (Task tool) for discovery work:
 - Only 1 subagent for builds/tests (backpressure)
 - Opus subagents for complex reasoning
 
+### Subagent Model Selection
+
+Use the `model` parameter in Task tool to optimize cost and speed:
+
+| Task Type | Model | Rationale |
+|-----------|-------|-----------|
+| File searches, grep, glob | `haiku` | Fast, cheap, pattern matching |
+| Reading/summarizing files | `haiku` | Extraction doesn't need reasoning |
+| Code exploration | `sonnet` | Balance of speed and understanding |
+| Complex analysis | `opus` | Multi-step reasoning required |
+| Architecture decisions | `opus` | Nuanced tradeoff evaluation |
+
+**Default behavior**: If `model` not specified, inherits from parent (usually opus).
+
+**Cost awareness**: Haiku is ~10x cheaper than Opus. For 500 parallel searches, use haiku.
+
+**Note**: Subagent costs are included in session totals but not tracked separately in metrics.
+
 ## State Lives in Context
 
 Unify execution state and conversation state. The conversation history is the single source of truth—don't maintain parallel state machines.
