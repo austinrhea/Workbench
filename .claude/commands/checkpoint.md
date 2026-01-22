@@ -74,17 +74,24 @@ If commands were added/modified this session, run `/docs` to update README.md.
 
 ### 5. Context Health Check
 
-**Primary** (if status line configured):
-- Green (<50%): Continue freely
-- Yellow (50-70%): Run `/summarize` then `/compact`
-- Red (>70%): Run `/summarize` then session break
+**Read metrics from `.claude/metrics.json`** (updated by status line):
+
+```bash
+cat .claude/metrics.json | jq '.used_percentage'
+```
+
+| Utilization | Color | Action |
+|-------------|-------|--------|
+| <50% | Green | Continue freely |
+| 50-70% | Yellow | Run `/summarize` then `/compact` |
+| >70% | Red | Run `/summarize` then session break |
+
+**Update STATE.md** `context_percent` field from metrics.
 
 **Built-in CLI commands** (not custom):
 - `/cost` — show token usage and costs
 - `/compact` — compress context while preserving key state
 - `/clear` — reset context entirely
-
-**Explicit check**: Run `/cost` to see exact token usage.
 
 **Fallback** (if metrics unavailable): Watch for degradation symptoms:
 - Forgetting earlier constraints or decisions

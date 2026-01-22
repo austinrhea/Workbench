@@ -11,9 +11,21 @@ Output: `## Cost`
 
 **State**: Utility command. Does not modify STATE.md.
 
-### 1. Run Built-in Command
+### 1. Read Current Metrics
 
-The `/cost` command is built into Claude Code. This custom command provides interpretation guidance.
+**Read from `.claude/metrics.json`** (updated by status line):
+
+```bash
+cat .claude/metrics.json
+```
+
+This file contains:
+- `used_percentage` — context window utilization
+- `total_cost_usd` — session cost
+- `total_input_tokens` / `total_output_tokens` — token counts
+- `updated_at` — when metrics were last captured
+
+**Alternative**: Run built-in `/cost` command for official totals.
 
 ### 2. Interpret Results
 

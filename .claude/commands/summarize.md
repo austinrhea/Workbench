@@ -26,6 +26,12 @@ Identify only decision-critical information:
 
 ### 2. CHUNK — Structure for Parsing
 
+**Read current metrics** from `.claude/metrics.json` (updated by status line):
+
+```bash
+cat .claude/metrics.json | jq '.used_percentage'
+```
+
 Write STATE.md with YAML frontmatter:
 
 ```markdown
@@ -33,7 +39,7 @@ Write STATE.md with YAML frontmatter:
 task: "Brief task description"
 status: in_progress | blocked | complete
 phase: research | plan | implement | debug
-context_percent: [current utilization]
+context_percent: [from .claude/metrics.json used_percentage]
 last_updated: [today's date]
 ---
 

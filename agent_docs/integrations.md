@@ -53,6 +53,31 @@ From `context.md` and `principles.md`:
 
 Edit `scripts/statusline.sh` to change display format. Must output single line to stdout. Supports ANSI colors.
 
+### Metrics Persistence
+
+The status line script persists metrics to `.claude/metrics.json` for commands to read:
+
+```json
+{
+  "used_percentage": 42.5,
+  "remaining_percentage": 57.5,
+  "context_window_size": 200000,
+  "total_input_tokens": 15234,
+  "total_output_tokens": 4521,
+  "total_cost_usd": 0.0123,
+  "model": "Opus",
+  "updated_at": "2026-01-22T..."
+}
+```
+
+Commands (`/checkpoint`, `/summarize`, `/cost`) read this file for context health checks:
+
+```bash
+cat .claude/metrics.json | jq '.used_percentage'
+```
+
+This bridges the gap between status line display and programmatic access.
+
 ## MCP Servers
 
 ### When to Add
