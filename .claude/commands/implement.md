@@ -7,6 +7,8 @@ $ARGUMENTS
 
 ## Instructions
 
+Output: `## Implementation Phase`
+
 ### 1. Execute One Step at a Time
 - Complete step fully before moving to next
 - Verify each step per the plan's criteria
@@ -17,6 +19,7 @@ $ARGUMENTS
 - Use `run_silent` patterns for test/build
 - Summarize verbose command output
 - Flag if context is getting heavy (approaching 60%+)
+- Run `/checkpoint` after each verified phase
 
 ### 3. Handle Deviations
 

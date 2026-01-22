@@ -7,6 +7,8 @@ $ARGUMENTS
 
 ## Instructions
 
+Output: `## Planning Phase`
+
 ### 1. Gather Context
 - Read files identified in research
 - Verify understanding is current
@@ -57,6 +59,10 @@ Format as checklist with verification:
 - Where are there meaningful alternatives?
 - What tradeoffs exist?
 - What needs human input before proceeding?
+
+### 6. Checkpoint
+
+Run `/checkpoint` to save plan to STATE.md before proceeding.
 
 ## Constraints
 

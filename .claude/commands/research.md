@@ -7,6 +7,8 @@ $ARGUMENTS
 
 ## Instructions
 
+Output: `## Research Phase`
+
 ### 1. Study the Relevant Context
 - Read all user-mentioned files completely (no limit/offset)
 - Study existing patterns in the codebase
@@ -57,6 +59,10 @@ Break into composable research areas. Use subagents for parallel exploration:
 - Be a documentarian, not a critic
 - Maximum 125 characters for quoted source material
 - Verify claims before stating them
+
+### 6. Checkpoint
+
+Run `/checkpoint` to save research artifact to STATE.md before proceeding.
 
 ## Exit Criteria
 
