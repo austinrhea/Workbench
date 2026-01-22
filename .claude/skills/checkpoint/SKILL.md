@@ -1,3 +1,8 @@
+---
+name: checkpoint
+description: Save current state for session breaks. Includes context health check and recommendations.
+---
+
 # Checkpoint
 
 Save current state for session breaks. Includes context health check and recommendations.
@@ -19,40 +24,27 @@ Review what's been accomplished:
 
 ### 2. Context Health Check
 
-**Read metrics from `.claude/metrics.json`** (updated by status line):
+**Read metrics** using shared script:
 
 ```bash
-cat .claude/metrics.json 2>/dev/null | jq -r '.used_percentage // "unavailable"'
+.claude/skills/shared/scripts/read-metrics.sh used_percentage
 ```
 
-| Utilization | Status | Recommendation |
-|-------------|--------|----------------|
-| <30% | Peak | Continue freely |
-| 30-50% | Good | Reliable performance |
-| 50-70% | Degrading | Run `/summarize` then `/compact` soon |
-| >70% | Dumb zone | Run `/summarize` then `/compact` or `/clear` |
+See `agent_docs/context.md` for utilization thresholds and recommended actions.
 
-**Fallback** (if metrics unavailable): Watch for degradation symptoms:
-- Forgetting earlier constraints or decisions
-- Hallucinating libraries or APIs
-- Missing obvious issues
+**Fallback** (if metrics unavailable): Watch for degradation symptoms — forgetting constraints, hallucinating APIs, missing obvious issues.
 
 ### 3. Update STATE.md (Incremental)
 
 **Merge updates into existing STATE.md** rather than overwriting:
 - Update YAML frontmatter fields (status, phase, context_percent, last_updated)
 - Append new decisions to `## Decisions`
-- **Prune stale decisions** (see rules below)
+- **Prune stale decisions** (delete when encoded in code, or task complete)
 - Update `## Blockers` (add new, mark resolved with [x])
 - Update `## Key Files` (add new discoveries)
 - Replace `## Next Steps` with current guidance
 
-**Decision pruning rules** — delete decisions when:
-- Now encoded in skills/commands (it's in the code now)
-- Project-wide facts, not active choices (move to `agent_docs/`)
-- The task they relate to is complete
-
-If STATE.md doesn't exist, use [state template](templates/checkpoint-state.md).
+If STATE.md doesn't exist, use [state template](../shared/templates/state.md).
 
 ### 4. Git State (If Applicable)
 
@@ -70,15 +62,7 @@ If skills were added/modified this session, run `/docs` to update README.md.
 
 ### 6. Output Recommendation
 
-Based on utilization and task status:
-
-| Condition | Output |
-|-----------|--------|
-| Task complete, context <50% | "Task complete. Context healthy." |
-| Task complete, context >50% | "Task complete. Consider `/compact` before next task." |
-| Task in progress, context <50% | "Checkpoint saved. Continue freely." |
-| Task in progress, context 50-70% | "Checkpoint saved. Consider `/compact` before next major step." |
-| Task in progress, context >70% | "Checkpoint saved. Run `/summarize` then `/compact` before continuing." |
+Based on utilization (from metrics) and task status, recommend next action. See `agent_docs/context.md` for threshold guidance.
 
 ## Constraints
 

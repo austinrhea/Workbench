@@ -1,5 +1,8 @@
 #!/bin/bash
 # Read context metrics from .claude/metrics.json
+# Usage: ./read-metrics.sh [field]
+#   No args: returns full JSON
+#   With arg: returns specific field (e.g., "used_percentage")
 # Returns JSON with current utilization or error status
 
 METRICS_FILE=".claude/metrics.json"
@@ -23,5 +26,16 @@ else
 fi
 
 # Read and augment metrics
-jq --argjson stale "$stale" '. + {stale: $stale}' "$METRICS_FILE" 2>/dev/null || \
+METRICS=$(jq --argjson stale "$stale" '. + {stale: $stale}' "$METRICS_FILE" 2>/dev/null)
+
+if [[ $? -ne 0 ]]; then
     echo '{"error": "invalid json", "used_percentage": null}'
+    exit 1
+fi
+
+# If field requested, extract it
+if [[ -n "$1" ]]; then
+    echo "$METRICS" | jq -r ".$1 // \"unknown\""
+else
+    echo "$METRICS"
+fi

@@ -1,3 +1,8 @@
+---
+name: docs
+description: Update README.md commands table from skills.
+---
+
 # Docs
 
 Update README.md commands table from skills.

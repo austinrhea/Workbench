@@ -1,9 +1,6 @@
 ---
 name: research
 description: Understand problem space before proposing changes. Use when exploring unfamiliar code, analyzing requirements, or planning features that need investigation.
-disable-model-invocation: true
-context: fork
-agent: Explore
 allowed-tools: Read, Grep, Glob, Task, WebFetch
 ---
 

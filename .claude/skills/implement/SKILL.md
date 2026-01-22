@@ -1,7 +1,6 @@
 ---
 name: implement
 description: Execute approved plan incrementally with verification at each step. Use after plan is approved.
-disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task
 ---
 

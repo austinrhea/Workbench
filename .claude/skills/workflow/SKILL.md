@@ -1,13 +1,13 @@
 ---
 name: workflow
-description: Entry point for task execution. Routes to research, plan, implement, or debug based on task type and existing state. Use when starting new work or resuming from a break.
+description: Entry point for task execution. Routes to research, plan, implement, or debug based on task type and existing state. Orchestrates phase transitions after approval.
 disable-model-invocation: true
-allowed-tools: Read, Write, Glob, Skill
+allowed-tools: Read, Write, Glob, Skill, AskUserQuestion
 ---
 
 # Workflow
 
-Entry point for task execution. Routes to appropriate phase based on task type and existing state.
+Entry point and orchestrator. Routes to appropriate phase, then manages transitions after each approval gate.
 
 ## Task
 $ARGUMENTS
@@ -18,50 +18,49 @@ Output: `## Workflow`
 
 ### 1. Check for Existing State
 
-Read STATE.md if it exists. Parse YAML frontmatter for structured data:
+Read STATE.md if it exists. Parse YAML frontmatter:
 
 ```yaml
 ---
 task: "..."
 status: in_progress | blocked | complete | parked
 phase: research | plan | implement | debug | idle | quick
+path: research,plan,implement  # orchestration path
 context_percent: N
 last_updated: YYYY-MM-DD
 ---
 ```
 
-**If STATE.md found with `status: idle` or `status: complete`**: proceed to assessment
+**If `status: idle` or `status: complete`**: proceed to assessment
 
-**If STATE.md found with `status: in_progress | blocked | parked`**, output reload summary:
+**If `status: in_progress` with `path` set**: offer continuation
 
 ```markdown
 ## Existing State Found
 
-**Task**: [from frontmatter]
-**Phase**: [from frontmatter]
-**Status**: [from frontmatter]
-**Last updated**: [from frontmatter]
-
-**Decisions**: [from body]
-**Blockers**: [from body]
-**Next steps**: [from body]
+**Task**: [task]
+**Current phase**: [phase]
+**Path**: [path]
+**Progress**: [which phases complete]
 
 Options:
-1. **Resume** — continue from checkpoint
+1. **Continue** — resume at current phase
 2. **Park and switch** — set status to parked, begin new task
-3. **Discard and start fresh** — clear state, begin new task
+3. **Discard** — clear state, begin new task
 ```
+
+**If `status: in_progress` without `path`**: legacy state, offer resume or restart
 
 **If no STATE.md**: proceed to assessment
 
 ### 2. Assess Task Type
 
-| Signals | Task Type | Entry Point |
-|---------|-----------|-------------|
-| "not working", "error", "bug", "broken" | Bug/failure | `/debug` |
-| "add", "implement", "create", "build" + unclear scope | New feature | `/research` |
-| Clear, small, single-file change | Quick fix | Direct implementation |
-| "refactor", "change", "update" + multi-file | Modification | `/research` |
+| Signals | Task Type | Path |
+|---------|-----------|------|
+| "not working", "error", "bug", "broken" | Bug | `debug` (then implement if needed) |
+| "add", "implement", "create", "build" + unclear scope | Feature | `research,plan,implement` |
+| Clear, small, single-file change | Quick fix | (no path, direct implementation) |
+| "refactor", "change", "update" + multi-file | Modification | `research,plan,implement` |
 
 ### 3. Present Recommendation
 
@@ -72,59 +71,83 @@ Options:
 **Type**: [bug | feature | quick fix | modification]
 **Scope**: [small | medium | large]
 
-**Recommended path**:
-[entry point] → [subsequent phases]
+**Path**: [phase] → [phase] → [phase]
 
-**Rationale**:
-[Why this path fits the task]
+**Rationale**: [Why this path fits]
 
-Ready to proceed?
+Proceed?
 ```
 
 ### 4. Initialize State
 
-**Skip this step for quick fixes** — they complete in one turn and don't need state tracking.
+**Skip for quick fixes** — complete in one turn.
 
-**For all other task types**, use the [state initialization template](templates/state-init.md):
+**For all other task types**, write STATE.md:
 
 ```yaml
 ---
-task: "[one-line from assessment]"
+task: "[one-line]"
 status: in_progress
-phase: [entry point phase]
+phase: [first phase in path]
+path: [comma-separated phases]
 context_percent: 0
-last_updated: [today's date]
+last_updated: [today]
 ---
 
 ## Decisions
 [None yet]
 
 ## Blockers
-[None yet]
+[None]
 
 ## Key Files
 [To be discovered]
 
 ## Next Steps
-[Entry point phase] in progress
+Starting [first phase]
 ```
 
-**If parking a previous task**: Before writing new state, update the existing task's status to `parked` and preserve its content in a `## Parked` section at the bottom of STATE.md.
+### 5. Orchestration Loop
 
-This ensures state is captured even if user exits mid-task.
+After user approves, execute this loop:
 
-### 5. Execute or Hand Off
+```
+while path has remaining phases:
+    1. Invoke current phase skill (using Skill tool)
+    2. Phase skill runs, ends with gate question
+    3. User approves (or redirects)
+    4. Update STATE.md: advance phase, update context_percent
+    5. If more phases remain, continue loop
+    6. If user redirects, update path and continue
+```
 
-- If user confirms: invoke the recommended phase skill
-- If user chooses different path: follow their direction
-- If task is trivial (quick fix): proceed directly with implementation
+**Invoking phase skills**:
+- `/research` — exploration, returns findings
+- `/plan` — creates implementation plan
+- `/implement` — executes plan with checkpoints
+- `/debug` — diagnoses issue, may lead to implement
+
+**After each phase completes**:
+- Update `phase:` to next in path
+- Update `## Next Steps`
+- Present transition: "Research complete. Ready to plan?"
+
+**On user redirect**: Update `path:` to new direction, continue from there.
+
+### 6. Completion
+
+When all phases complete:
+- Set `status: complete`, `phase: idle`
+- Clear `path:`
+- Output: "Task complete. Please verify."
 
 ## Constraints
 
 - Don't skip assessment — even obvious tasks benefit from explicit routing
-- Don't auto-chain phases — wait for approval at each boundary
-- Keep STATE.md as source of truth for resumption
+- Wait for approval at each phase boundary (gates are mandatory)
+- Keep STATE.md as source of truth
+- If context exceeds 60%, suggest `/checkpoint` before next phase
 
 ## Exit Criteria
 
-User is routed to appropriate phase skill, or task is completed (quick fix).
+Task completed through all phases, or user explicitly exits workflow.

@@ -1,6 +1,11 @@
+---
+name: cost
+description: Quick context health check. See /checkpoint for full state management.
+---
+
 # Cost
 
-Context health check. See `/checkpoint` for full state management.
+Quick context health check.
 
 ## Task
 $ARGUMENTS
@@ -9,34 +14,19 @@ $ARGUMENTS
 
 Output: `## Cost`
 
-**Note**: This is a lightweight utility. For full state management, use `/checkpoint`.
-
-### Quick Check
-
-Read metrics from `.claude/metrics.json`:
+### Read Metrics
 
 ```bash
-cat .claude/metrics.json 2>/dev/null | jq '.'
+.claude/skills/shared/scripts/read-metrics.sh
 ```
 
-Fields:
-- `used_percentage` — context window utilization
-- `total_cost_usd` — session cost
-- `total_input_tokens` / `total_output_tokens` — token counts
-- `updated_at` — when metrics were last captured
+Key fields: `used_percentage`, `total_cost_usd`, `stale` (true if >5min old).
 
 ### Interpretation
 
-| Utilization | Status | Action |
-|-------------|--------|--------|
-| <30% | Peak | Continue freely |
-| 30-50% | Good | Reliable performance |
-| 50-70% | Degrading | Consider `/compact` soon |
-| >70% | Dumb zone | Run `/summarize` then `/compact` |
+See `agent_docs/context.md` for utilization thresholds and recommended actions.
 
-### For Detailed Costs
-
-Use the built-in `/cost` CLI command for official token counts and pricing.
+For full state management, use `/checkpoint`.
 
 ## Exit Criteria
 

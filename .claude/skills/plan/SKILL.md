@@ -1,7 +1,6 @@
 ---
 name: plan
 description: Create specific implementation steps for review. Use after research is complete and before writing code.
-disable-model-invocation: true
 allowed-tools: Read, Write, Glob, Grep
 ---
 

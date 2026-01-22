@@ -1,9 +1,6 @@
 ---
 name: debug
 description: Diagnose bugs systematically before proposing fixes. Use when something is broken, failing, erroring, or not working as expected.
-disable-model-invocation: true
-context: fork
-agent: Explore
 allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 

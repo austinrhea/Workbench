@@ -1,3 +1,8 @@
+---
+name: test
+description: Run tests with context-efficient output.
+---
+
 # Test
 
 Run tests with context-efficient output.

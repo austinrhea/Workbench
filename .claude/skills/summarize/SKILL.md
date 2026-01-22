@@ -1,3 +1,8 @@
+---
+name: summarize
+description: Prepare context for compaction. Run before /compact to ensure critical state survives.
+---
+
 # Summarize
 
 Prepare context for compaction using FILTER-CHUNK-STITCH-VERIFY pattern.
@@ -26,13 +31,13 @@ Identify only decision-critical information:
 
 ### 2. CHUNK — Structure for Parsing
 
-**Read current metrics** from `.claude/metrics.json`:
+**Read current metrics** using shared script:
 
 ```bash
-cat .claude/metrics.json 2>/dev/null | jq -r '.used_percentage // "unknown"'
+.claude/skills/shared/scripts/read-metrics.sh used_percentage
 ```
 
-Write STATE.md with YAML frontmatter:
+Write STATE.md with YAML frontmatter (see [state template](../shared/templates/state.md)):
 
 ```markdown
 ---
