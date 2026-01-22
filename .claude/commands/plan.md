@@ -62,7 +62,12 @@ Format as checklist with verification:
 
 ### 6. Checkpoint
 
-Run `/checkpoint` to save plan to STATE.md before proceeding.
+Update STATE.md incrementally:
+- Set `phase: plan`
+- Add plan decisions to `## Decisions`
+- Update `## Next Steps` with plan summary and approval status
+
+Run `/checkpoint` if context is heavy or taking a break.
 
 ## Constraints
 

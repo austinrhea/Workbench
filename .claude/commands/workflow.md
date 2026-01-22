@@ -16,14 +16,16 @@ Read STATE.md if it exists. Parse YAML frontmatter for structured data:
 ```yaml
 ---
 task: "..."
-status: in_progress | blocked | complete
-phase: research | plan | implement | debug
+status: in_progress | blocked | complete | parked
+phase: research | plan | implement | debug | idle | quick
 context_percent: N
 last_updated: YYYY-MM-DD
 ---
 ```
 
-**If STATE.md found**, output reload summary:
+**If STATE.md found with `status: idle` or `status: complete`**: proceed to assessment
+
+**If STATE.md found with `status: in_progress | blocked | parked`**, output reload summary:
 
 ```markdown
 ## Existing State Found
@@ -39,8 +41,8 @@ last_updated: YYYY-MM-DD
 
 Options:
 1. **Resume** — continue from checkpoint
-2. **Start fresh** — clear state, begin new task
-3. **Different task** — keep state, work on something else
+2. **Park and switch** — set status to parked, begin new task
+3. **Discard and start fresh** — clear state, begin new task
 ```
 
 **If no STATE.md**: proceed to assessment
@@ -74,7 +76,9 @@ Ready to proceed?
 
 ### 4. Initialize State
 
-**Before executing**, write STATE.md with initial task state:
+**Skip this step for quick fixes** — they complete in one turn and don't need state tracking.
+
+**For all other task types**, write STATE.md with initial task state:
 
 ```yaml
 ---
@@ -97,6 +101,8 @@ last_updated: [today's date]
 ## Next Steps
 [Entry point phase] in progress
 ```
+
+**If parking a previous task**: Before writing new state, update the existing task's status to `parked` and preserve its content in a `## Parked` section at the bottom of STATE.md.
 
 This ensures state is captured even if user exits mid-task.
 

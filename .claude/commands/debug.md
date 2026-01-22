@@ -59,7 +59,13 @@ Output: `## Debug Phase`
 
 ### 6. Checkpoint
 
-Run `/checkpoint` to save diagnosis to STATE.md before proceeding.
+Update STATE.md incrementally:
+- Set `phase: debug`
+- Add root cause and fix decision to `## Decisions`
+- Add investigated files to `## Key Files`
+- Update `## Next Steps` with recommended fix
+
+Run `/checkpoint` if context is heavy or taking a break.
 
 ## Constraints
 

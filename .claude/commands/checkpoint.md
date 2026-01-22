@@ -17,15 +17,22 @@ Review what's been accomplished:
 - Any blockers or decisions pending?
 - Key files touched or discovered?
 
-### 2. Create/Update STATE.md
+### 2. Update STATE.md (Incremental)
 
-Write to `STATE.md` in project root with YAML frontmatter:
+**Merge updates into existing STATE.md** rather than overwriting:
+- Update YAML frontmatter fields (status, phase, context_percent, last_updated)
+- Append new decisions to `## Decisions`
+- Update `## Blockers` (add new, mark resolved with [x])
+- Update `## Key Files` (add new discoveries)
+- Replace `## Next Steps` with current guidance
+
+If STATE.md doesn't exist, create with this structure:
 
 ```markdown
 ---
 task: "Brief task description"
-status: in_progress | blocked | complete
-phase: research | plan | implement | debug | idle
+status: in_progress | blocked | complete | parked
+phase: research | plan | implement | debug | idle | quick
 context_percent: [current utilization]
 last_updated: [today's date]
 ---

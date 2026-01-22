@@ -62,7 +62,13 @@ Break into composable research areas. Use subagents for parallel exploration:
 
 ### 6. Checkpoint
 
-Run `/checkpoint` to save research artifact to STATE.md before proceeding.
+Update STATE.md incrementally:
+- Set `phase: research`
+- Append key findings to `## Decisions`
+- Add discovered files to `## Key Files`
+- Update `## Next Steps` with research conclusions
+
+Run `/checkpoint` if context is heavy or taking a break.
 
 ## Exit Criteria
 
