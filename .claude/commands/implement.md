@@ -21,10 +21,19 @@ Output: `## Implementation Phase`
 
 ### 2. Maintain Context Hygiene
 - Keep output concise
-- Use `run_silent` patterns for test/build
+- Use `run_silent` patterns for test/build (see `scripts/run_silent.sh`)
 - Summarize verbose command output
 - Flag if context is getting heavy (approaching 60%+)
 - Run `/checkpoint` after each verified phase
+
+**Fail-fast flags** (stop at first failure):
+
+| Framework | Flag |
+|-----------|------|
+| pytest | `-x` |
+| jest | `--bail` |
+| vitest | `--bail` |
+| go test | `-failfast` |
 
 ### 3. Handle Deviations
 
@@ -73,6 +82,15 @@ What's coming in the next phase
 - Pause after each phase for human review
 - Never check off manual testing steps until user confirms
 - Don't rush—maintain quality over speed
+
+## Anti-Patterns to Avoid
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Overbaking | Adding unrequested features | Stick to spec |
+| Running forever | No checkpoints | Bounded cycles with `/checkpoint` |
+| Context hoarding | Keeping everything "just in case" | Aggressive pruning |
+| Vibe coding | Implementation without understanding | Research first |
 
 ## Constraints
 

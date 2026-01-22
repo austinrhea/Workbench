@@ -79,6 +79,11 @@ If commands were added/modified this session, run `/docs` to update README.md.
 - Yellow (50-70%): Run `/summarize` then `/compact`
 - Red (>70%): Run `/summarize` then session break
 
+**Built-in CLI commands** (not custom):
+- `/cost` — show token usage and costs
+- `/compact` — compress context while preserving key state
+- `/clear` — reset context entirely
+
 **Explicit check**: Run `/cost` to see exact token usage.
 
 **Fallback** (if metrics unavailable): Watch for degradation symptoms:

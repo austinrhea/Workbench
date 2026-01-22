@@ -297,3 +297,4 @@ How to know it's complete.
 | `/checkpoint` | Save state for breaks |
 | `/summarize` | Prepare context for compaction |
 | `/docs` | Update README commands table from source |
+| `/cost` | Check context utilization and thresholds |

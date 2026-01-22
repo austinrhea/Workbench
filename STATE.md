@@ -1,5 +1,5 @@
 ---
-task: "None"
+task: "Evaluate agent_docs for remaining workflow improvements"
 status: complete
 phase: idle
 context_percent: 0

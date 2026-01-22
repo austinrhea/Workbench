@@ -20,6 +20,7 @@ The `/workflow` command assesses your task and routes to the appropriate phase:
 | Command | Description |
 |---------|-------------|
 | `/checkpoint` | Save current state for session breaks or complex work |
+| `/cost` | Check context utilization and token costs |
 | `/debug` | Diagnose systematically before proposing fixes |
 | `/docs` | Update README.md commands table from source |
 | `/implement` | Execute the approved plan incrementally |
