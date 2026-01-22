@@ -1,5 +1,5 @@
 ---
-task: "Test end-to-end workflow cycle with state preservation"
+task: "Design token-saving strategies using hooks and skills"
 status: complete
 phase: idle
 context_percent: 32
@@ -7,17 +7,18 @@ last_updated: 2026-01-22
 ---
 
 ## Decisions
-- Workflow system has 3 layers: state machine, persistence, context monitoring
-- Metrics flow verified: statusline.sh → .claude/metrics.json → commands read it
-- All 4 phases passed: metrics, persistence, thresholds, compaction survival
+- Three token-saving layers: hooks (auto-enforcement), skills (user-invoked), subagents (discovery isolation)
+- Already have: run_silent.sh, retry-limits.sh, metrics persistence
+- User wants: auto-summarize at thresholds, auto-format all edits, output truncation
 
 ## Blockers
 [None]
 
 ## Key Files
-- `.claude/metrics.json` — real-time context metrics
-- `scripts/statusline.sh:17-28` — persists metrics from status line
-- `.claude/commands/checkpoint.md:77-100` — threshold-based recommendations
+- `agent_docs/integrations.md:166-230` — hook configuration patterns
+- `agent_docs/context.md:92-121` — subagent model selection for cost
+- `agent_docs/testing.md:14-51` — run_silent pattern
+- `.claude/settings.json:36-60` — current hook config
 
 ## Next Steps
-Task complete. Workflow system operating as expected.
+Task complete. Token-saving hooks and skills implemented.

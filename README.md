@@ -27,6 +27,7 @@ The `/workflow` command assesses your task and routes to the appropriate phase:
 | `/plan` | Create a specific implementation plan for review |
 | `/research` | Before proposing changes, understand the problem space |
 | `/summarize` | Prepare context for compaction using FILTER→CHUNK→STITCH→VERIFY pattern |
+| `/test` | Run tests with context-efficient output |
 | `/workflow` | Entry point for task execution |
 <!-- COMMANDS:END -->
 

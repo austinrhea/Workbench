@@ -118,6 +118,12 @@ Use the `model` parameter in Task tool to optimize cost and speed:
 
 **Cost awareness**: Haiku is ~10x cheaper than Opus. For 500 parallel searches, use haiku.
 
+**Example usage**:
+```
+Task(prompt="find files matching *.test.ts", model="haiku", subagent_type="Explore")
+Task(prompt="analyze auth flow architecture", model="opus", subagent_type="Explore")
+```
+
 **Note**: Subagent costs are included in session totals but not tracked separately in metrics.
 
 ## State Lives in Context

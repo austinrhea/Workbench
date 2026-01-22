@@ -34,6 +34,18 @@
     "command": "./scripts/statusline.sh"
   },
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/context-warning.sh",
+            "description": "Warn when context utilization is high"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -54,6 +66,16 @@
             "type": "command",
             "command": "./scripts/retry-limits.sh",
             "description": "Track consecutive failures, block at 3"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/auto-format.sh",
+            "description": "Auto-format edited files"
           }
         ]
       }

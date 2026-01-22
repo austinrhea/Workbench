@@ -23,7 +23,17 @@ Output: `## Research Phase`
 Break into composable research areas. Use subagents for parallel exploration:
 - Up to 500 parallel subagents for searches/reads
 - Keep parent context focused on synthesis
-- Use `model: haiku` for simple searches, `model: opus` for complex analysis (see `context.md`)
+
+**Subagent model selection** (10x cost difference):
+
+| Task Type | Model | Why |
+|-----------|-------|-----|
+| File searches, grep, glob | `haiku` | Pattern matching only |
+| Reading/summarizing files | `haiku` | Extraction, not reasoning |
+| Code exploration | `sonnet` | Balance speed/understanding |
+| Complex analysis | `opus` | Multi-step reasoning |
+
+Example: `Task(prompt="find all API routes", model="haiku")`
 
 ### 3. Map the Territory
 - Identify files, modules, and dependencies involved
