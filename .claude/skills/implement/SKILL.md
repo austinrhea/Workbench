@@ -20,12 +20,19 @@ Output: `## Implementation Phase`
 - Set `phase: implement`
 - Set `status: in_progress`
 
-### 1. Execute One Step at a Time
+### 1. Consume Plan Handoff
+
+Read `## Plan` from STATE.md:
+- Use **Plan Summary** as execution checklist
+- Run **Verification Commands** after each step
+- Monitor **Risks Identified** during execution
+
+### 2. Execute One Step at a Time
 - Complete step fully before moving to next
 - Verify each step per the plan's criteria
 - Mark steps complete as you go
 
-### 2. Maintain Context Hygiene
+### 3. Maintain Context Hygiene
 
 **Check metrics** after every 3-5 steps:
 
@@ -54,7 +61,7 @@ Output: `## Implementation Phase`
 | vitest | `--bail` |
 | go test | `-failfast` |
 
-### 3. Handle Deviations
+### 4. Handle Deviations
 
 **Deviation Rules** (from `agent_docs/workflow.md`):
 
@@ -76,7 +83,7 @@ If errors occur:
 2. Attempt self-correction
 3. After 2-3 consecutive failures, escalate to human
 
-### 4. Report Progress
+### 5. Report Progress
 
 Use the [progress report template](templates/progress-report.md):
 
@@ -97,7 +104,7 @@ Any learnings or adjustments made
 What's coming in the next phase
 ```
 
-### 5. Pause for Human Verification
+### 6. Pause for Human Verification
 
 - Pause after each phase for human review
 - Never check off manual testing steps until user confirms

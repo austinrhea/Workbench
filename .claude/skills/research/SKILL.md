@@ -95,6 +95,36 @@ Update STATE.md **during research** when:
 - Update `## Next Steps` with research conclusions
 - Run `/checkpoint` if context is heavy or taking a break
 
+### 7. Produce Handoff
+
+Before exit gate, append handoff to STATE.md under `## Research Findings`:
+
+```markdown
+## Research Findings
+
+### Completed
+- [x] [What was researched]
+
+### Context
+**Key Files**:
+- `path:line` — why it matters
+
+**Patterns Discovered**:
+- [Pattern]: [where used]
+
+**Constraints**:
+- [Must/Cannot statements]
+
+**Decisions Made**:
+- [Decision]: [rationale]
+
+### Remaining
+- [ ] Create implementation plan
+- [ ] [Specific items for planning phase]
+```
+
+See [handoff template](../shared/templates/handoff.md) for full format.
+
 ## Exit Criteria
 
 Can explain the problem space and proposed approach without hand-waving.

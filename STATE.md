@@ -1,26 +1,27 @@
 ---
-task: "Create workflow example documentation with diagrams"
+task: "Improve workflow pipeline - STATE.md enrichment and context lifecycle"
 status: complete
 phase: idle
-context_percent: 41
+context_percent: 60
 last_updated: 2026-01-22
 ---
 
-## Deliverable
-- `agent_docs/workflow-example.md` (416 lines)
+## Summary
+Added structured handoff protocol between workflow phases and exit lifecycle options.
 
-## Contents
-- Why workflow exists (error cascade multipliers)
-- Orchestration flowchart + task routing table
-- Session reload sequence diagram + STATE.md formats
-- Context hygiene state diagram + dumb zone warning
-- Phase gates flowchart + deviation rules
-- Full example walkthrough (dark mode feature)
-- Quick reference tables
+## Changes Made
+- Created handoff template (`.claude/skills/shared/templates/handoff.md`)
+- Research skill outputs handoff to `## Research Findings`
+- Plan skill consumes research handoff, outputs to `## Plan`
+- Implement skill consumes plan handoff
+- STATE.md template has phase-specific sections
+- Workflow offers clear/compact/continue on completion
+- Checkpoint is mandatory between phases (not suggested)
 
-## Diagrams (5 Mermaid)
-1. Orchestration flowchart
-2. Session reload sequence
-3. Context utilization state diagram
-4. Phase gate flowchart
-5. (embedded in flow) approval gates
+## Key Files
+- `.claude/skills/workflow/SKILL.md` — orchestrator with exit lifecycle
+- `.claude/skills/shared/templates/handoff.md` — handoff format
+- `.claude/skills/shared/templates/state.md` — updated template
+
+## Uncommitted Changes
+- 6 modified files + 1 new file ready to commit

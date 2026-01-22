@@ -20,12 +20,19 @@ Output: `## Planning Phase`
 - Set `phase: plan`
 - Set `status: in_progress`
 
-### 1. Gather Context
-- Read files identified in research
+### 1. Consume Research Handoff
+
+Read `## Research Findings` from STATE.md:
+- Use **Key Files** as starting points
+- Honor **Constraints** in plan design
+- Address **Remaining** items from research
+
+### 2. Gather Context
+- Read files identified in research handoff
 - Verify understanding is current
 - Spawn parallel research tasks if gaps exist
 
-### 2. Define Success Criteria
+### 3. Define Success Criteria
 
 **Automated verification:**
 - Build commands that must pass
@@ -37,7 +44,7 @@ Output: `## Planning Phase`
 - Performance validation
 - Edge case review
 
-### 3. Scope Boundaries
+### 4. Scope Boundaries
 
 **What we're doing:**
 - Specific deliverables
@@ -45,7 +52,7 @@ Output: `## Planning Phase`
 **What we're NOT doing:**
 - Explicit exclusions (prevents scope creep)
 
-### 4. Create Step-by-Step Plan
+### 5. Create Step-by-Step Plan
 
 Use the [plan format template](templates/plan-format.md):
 
@@ -65,13 +72,13 @@ Use the [plan format template](templates/plan-format.md):
 - [ ] Step 3: ...
 ```
 
-### 5. Identify Decision Points
+### 6. Identify Decision Points
 
 - Where are there meaningful alternatives?
 - What tradeoffs exist?
 - What needs human input before proceeding?
 
-### 6. Checkpoint
+### 7. Checkpoint
 
 Update STATE.md incrementally:
 - Set `phase: plan`
@@ -79,6 +86,37 @@ Update STATE.md incrementally:
 - Update `## Next Steps` with plan summary and approval status
 
 Run `/checkpoint` if context is heavy or taking a break.
+
+### 8. Produce Handoff
+
+Before exit gate, append handoff to STATE.md under `## Plan`:
+
+```markdown
+## Plan
+
+### Completed
+- [x] Implementation plan created
+- [x] Success criteria defined
+
+### Context
+**Plan Summary**:
+1. [Step 1 brief]
+2. [Step 2 brief]
+...
+
+**Verification Commands**:
+- `[test command]`
+- `[build command]`
+
+**Risks Identified**:
+- [Risk]: [mitigation]
+
+### Remaining
+- [ ] Execute plan steps
+- [ ] Verify each step before proceeding
+```
+
+See [handoff template](../shared/templates/handoff.md) for full format.
 
 ## Constraints
 

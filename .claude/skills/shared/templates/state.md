@@ -15,14 +15,19 @@ last_updated: ${DATE}
 **Doing**: ${DOING:-[Explicit inclusions]}
 **Not doing**: ${NOT_DOING:-[Explicit exclusions]}
 
+## Research Findings
+${RESEARCH_FINDINGS:-[Populated by /research phase]}
+<!-- Handoff format: Completed, Context (Key Files, Patterns, Constraints), Remaining -->
+
+## Plan
+${PLAN:-[Populated by /plan phase]}
+<!-- Handoff format: Completed, Context (Plan Summary, Verification Commands, Risks), Remaining -->
+
 ## Progress
 ${PROGRESS:-[Track completed/pending steps with checkboxes]}
 
 ## Decisions
 ${DECISIONS:-[None yet]}
-
-## Learnings
-${LEARNINGS:-[Patterns, insights, gotchas discovered]}
 
 ## Blockers
 ${BLOCKERS:-[None]}

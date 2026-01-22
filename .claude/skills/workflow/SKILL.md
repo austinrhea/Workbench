@@ -113,13 +113,17 @@ After user approves, execute this loop:
 
 ```
 while path has remaining phases:
-    1. Invoke current phase skill (using Skill tool)
-    2. Phase skill runs, ends with gate question
-    3. User approves (or redirects)
-    4. Update STATE.md: advance phase, update context_percent
-    5. If more phases remain, continue loop
-    6. If user redirects, update path and continue
+    1. Pre-flight: check context utilization
+    2. Invoke current phase skill (using Skill tool)
+    3. Phase skill runs, ends with gate question
+    4. User approves (or redirects)
+    5. Run /checkpoint (mandatory between phases)
+    6. Update STATE.md: advance phase, update context_percent
+    7. If more phases remain, continue loop
+    8. If user redirects, update path and continue
 ```
+
+**Mandatory checkpoint**: Run `/checkpoint` after each phase approval. This captures phase-specific learnings in STATE.md before context compaction may be needed.
 
 **Invoking phase skills**:
 - `/research` — exploration, returns findings
@@ -139,7 +143,22 @@ while path has remaining phases:
 When all phases complete:
 - Set `status: complete`, `phase: idle`
 - Clear `path:`
-- Output: "Task complete. Please verify."
+- Run `/checkpoint` to save final state
+
+**Exit lifecycle** — offer context options:
+
+```markdown
+## Task Complete
+
+**Options:**
+1. **Clear** — fresh context for unrelated task (`/clear`)
+2. **Compact** — reduce context, preserve learnings (`/compact`)
+3. **Continue** — keep context for follow-up questions
+
+Which would you like?
+```
+
+**Why offer choice**: User may want follow-ups ("actually, can you also add X?"). Auto-clearing would be surprising.
 
 ## Constraints
 
