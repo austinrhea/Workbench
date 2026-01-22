@@ -26,6 +26,48 @@ Context engineeringâ€”structuring all inputs (prompts, history, external data)â€
 | Maximum CLAUDE.md | <300 lines | Absolute ceiling |
 | MCP server tool tax | ~10k tokens each | Hidden context cost |
 
+## MCP Server Token Costs
+
+Common MCP servers and their approximate context overhead:
+
+| MCP Server | Token Cost | Tools Added | When to Enable |
+|------------|------------|-------------|----------------|
+| filesystem | ~8k tokens | 11 tools | File operations outside sandbox |
+| git | ~6k tokens | 8 tools | Git operations beyond basic CLI |
+| github | ~12k tokens | 15 tools | PR reviews, issue management |
+| postgres | ~10k tokens | 10 tools | Database queries, schema inspection |
+| slack | ~8k tokens | 6 tools | Message posting, channel management |
+| memory | ~4k tokens | 4 tools | Cross-session persistence |
+| fetch | ~3k tokens | 2 tools | Web requests, API calls |
+| puppeteer | ~15k tokens | 12 tools | Browser automation, screenshots |
+
+**Configuration Example** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_TOKEN": "ghp_xxx" }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://user:pass@localhost/db"]
+    }
+  }
+}
+```
+
+**MCP Budget Rules**:
+- Each enabled server consumes ~5-15k tokens of context
+- 3 servers = ~30k tokens overhead before any work begins
+- Enable only servers needed for current task
+- Prefer CLI tools (git, gh) when available over MCP equivalents
+
 ## Quality Degradation Curve
 
 Context utilization directly affects output quality:
@@ -191,6 +233,35 @@ This means:
 - Smaller models: Exponential decay as instructions increase
 - Frontier models: Linear decay (more graceful)
 - At 500 instructions: Even best models hit ~68% accuracy
+
+## Model-Specific Instruction Limits
+
+Different models have varying capacities for following instructions:
+
+| Model | Context Window | Effective Instructions | Instruction Decay | Notes |
+|-------|----------------|------------------------|-------------------|-------|
+| Claude Opus 4.5 | 200k tokens | 200-250 | Linear | Best instruction following |
+| Claude Sonnet 4 | 200k tokens | 150-200 | Linear | Good balance of speed/quality |
+| Claude Haiku 3.5 | 200k tokens | 100-150 | Moderate | Fast, but drops complex instructions |
+| GPT-4o | 128k tokens | 150-200 | Linear | Strong instruction following |
+| GPT-4o-mini | 128k tokens | 80-120 | Steeper | Cost-effective but limited |
+| Gemini 1.5 Pro | 1M tokens | 150-200 | Linear | Large context, standard decay |
+| Gemini 1.5 Flash | 1M tokens | 80-120 | Steeper | Speed optimized |
+
+**Instruction Accuracy by Count**:
+
+| Instructions | Frontier Models | Mid-tier Models | Small Models |
+|--------------|-----------------|-----------------|--------------|
+| 50 | 95%+ | 90%+ | 85%+ |
+| 100 | 90%+ | 82%+ | 70%+ |
+| 200 | 85%+ | 72%+ | 55%+ |
+| 500 | 68% | 55% | 40% |
+
+**Practical Guidelines**:
+- Opus/GPT-4o: Can handle complex multi-step CLAUDE.md files
+- Sonnet/Haiku: Keep CLAUDE.md under 100 lines
+- For smaller models: Split instructions across task-specific files
+- All models: Front-load critical instructions (recency bias helps)
 
 ## Context Format
 

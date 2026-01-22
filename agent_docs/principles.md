@@ -48,6 +48,33 @@ Code: switch(intent) → execute_deploy()
 
 Treat prompts as first-class code. Version control them. Never use black-box abstractions.
 
+**Prompt Versioning Examples**:
+
+```python
+# prompts/deploy_v2.py
+DEPLOY_PROMPT = """
+You are a deployment assistant.
+Given a deploy request, extract:
+- service: string
+- environment: "staging" | "production"
+- version: semver string
+"""
+VERSION = "2.0.0"
+CHANGELOG = "Added environment validation"
+
+# Usage with version tracking
+def get_prompt(name: str, version: str = "latest"):
+    prompts = load_prompts(name)
+    return prompts[version] if version != "latest" else prompts[max(prompts.keys())]
+```
+
+**Version control patterns**:
+- Store prompts in dedicated `prompts/` directory
+- Use semantic versioning (breaking.feature.fix)
+- Include changelog in prompt files
+- A/B test versions in production
+- Log prompt version with each LLM call for debugging
+
 ### 3. Own Your Context
 
 Structure deliberately. Format for parseability:
@@ -186,6 +213,58 @@ while True:
         ↑                                      │
         └────── Deterministic Orchestration ───┘
 ```
+
+### Multi-Agent Coordination Patterns
+
+**Sequential Handoff** (simplest):
+```python
+def pipeline(task):
+    research = research_agent.run(task)           # Returns structured findings
+    plan = planning_agent.run(research.summary)   # Returns action plan
+    result = impl_agent.run(plan.steps)           # Executes plan
+    return result
+```
+
+**Supervisor Pattern** (orchestrator controls flow):
+```python
+def supervisor_loop(task):
+    while not done:
+        next_agent = supervisor.decide(task, history)  # LLM decides routing
+        result = agents[next_agent].run(task, history)
+        history.append({"agent": next_agent, "result": result})
+        if result.status == "complete":
+            done = True
+    return history
+```
+
+**Handoff Protocol** (agents pass context):
+```python
+@dataclass
+class Handoff:
+    from_agent: str
+    to_agent: str
+    context: dict       # What the next agent needs
+    completed: list     # What's done
+    remaining: list     # What's left
+
+# Each agent returns structured handoff
+def agent_run(task, handoff: Handoff) -> Handoff:
+    result = execute(task, handoff.context)
+    return Handoff(
+        from_agent="implement",
+        to_agent="review",
+        context={"code": result.code, "tests": result.tests},
+        completed=handoff.completed + ["implementation"],
+        remaining=["review", "deploy"]
+    )
+```
+
+**Coordination Rules**:
+- Each agent has single responsibility
+- Handoffs include explicit context (don't rely on shared state)
+- Supervisor makes routing decisions, not individual agents
+- Use deterministic orchestration when flow is predictable
+- Use supervisor when flow depends on intermediate results
 
 ### Wave-Based Execution
 
