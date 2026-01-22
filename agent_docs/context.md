@@ -165,37 +165,49 @@ Rules:
 - Read at session start to restore context
 - Delete resolved items aggressively
 
-### Automatic Session Reload
+### Automatic State Recovery
 
-The `session-init.sh` hook (UserPromptSubmit) automatically injects STATE.md into context when resuming after a break:
+The `session-init.sh` hook (UserPromptSubmit) automatically injects STATE.md in two scenarios:
+
+#### Scenario 1: Post-Compact Recovery (Immediate)
 
 | Condition | Behavior |
 |-----------|----------|
-| No STATE.md | Silent |
-| `status: idle` or `complete` | Silent |
-| `status: active/in_progress` + stale (>1h) | Inject content |
-| Fresh file (<1h) | Silent (already in session) |
+| Context fresh (<25%) + active status | Inject immediately |
+
+**Why**: After `/compact`, context utilization drops to ~5-15%. If STATE.md has `in_progress` or `blocked` status, the task wasn't complete. The hook detects this and injects the full state for seamless continuity.
+
+#### Scenario 2: Session Resume (After Break)
+
+| Condition | Behavior |
+|-----------|----------|
+| File stale (>1h) + active status | Inject content |
+
+**Why**: When returning to work after a break, restores context from where you left off.
+
+#### Silent (No Injection)
+
+| Condition | Rationale |
+|-----------|-----------|
+| No STATE.md | Nothing to restore |
+| `status: idle` or `complete` | Task finished, fresh start appropriate |
+| Normal context + fresh file | Already in active session |
 
 **Staleness** uses file modification time, not `last_updated` field.
 
-**Two formats supported**:
+**To suppress injection**: Set `status: idle`, `status: complete`, or delete STATE.md.
 
-1. Simple (general context):
-```markdown
-## Session Notes
-Whatever you want to persist
-```
+### Compact vs Clear Decision
 
-2. Workflow-managed (full structure):
-```yaml
----
-task: "..."
-status: in_progress
-phase: implement
----
-```
+At the 60% context gate, choose based on STATE.md status:
 
-To suppress injection: set `status: idle` or delete the file.
+| STATE.md status | Action | Rationale |
+|-----------------|--------|-----------|
+| `in_progress` or `blocked` | `/compact` | Preserve learnings, auto-recover |
+| `complete` or `idle` | `/clear` | Fresh start, nothing to preserve |
+| No STATE.md | `/clear` | Nothing to preserve |
+
+This is automated in the workflow skill's Context Recovery Protocol.
 
 ## Compaction
 

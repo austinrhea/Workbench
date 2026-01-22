@@ -46,10 +46,22 @@ See `agent_docs/context.md` for utilization thresholds and recommended actions.
 
 If STATE.md doesn't exist, use [state template](../shared/templates/state.md).
 
-### 4. Git State (If Applicable)
+### 4. Git State (Required)
 
-If changes are stable and worth preserving:
+Always record accurate git state to prevent stale information:
 
+```bash
+git status --short && git log -1 --oneline
+```
+
+| Working tree | STATE.md update |
+|--------------|-----------------|
+| Clean | `## Git State` → `Clean at [hash] [message]` |
+| Uncommitted changes | `## Git State` → `Uncommitted: [list files]` |
+
+**Why required**: Prevents stale "uncommitted changes" info after commits. The checkpoint is the source of truth for git state.
+
+**Rollback point** (if changes are stable):
 ```markdown
 ## Rollback Point
 Commit: [hash]

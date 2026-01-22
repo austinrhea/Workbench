@@ -35,6 +35,9 @@ ${BLOCKERS:-[None]}
 ## Key Files
 ${KEY_FILES:-[To be discovered]}
 
+## Git State
+${GIT_STATE:-[Run git status to populate]}
+
 ## Checkpoint
 ${CHECKPOINT:-[Last known good state]}
 

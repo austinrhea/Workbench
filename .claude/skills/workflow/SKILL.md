@@ -86,13 +86,20 @@ Proceed?
 
 ```yaml
 ---
-task: "[one-line]"
+task: "[one-line summary]"
 status: in_progress
 phase: [first phase in path]
 path: [comma-separated phases]
 context_percent: 0
 last_updated: [today]
 ---
+
+## Original Prompt
+> [Capture user's request VERBATIM - this survives compaction]
+
+## Scope
+**Doing**: [What's included]
+**Not doing**: [Explicit exclusions]
 
 ## Decisions
 [None yet]
@@ -106,6 +113,8 @@ last_updated: [today]
 ## Next Steps
 Starting [first phase]
 ```
+
+**Why capture original prompt**: After compaction or session break, the verbatim request ensures intent isn't lost. The one-line `task:` is a summary; the original prompt is the source of truth.
 
 ### 5. Orchestration Loop
 
@@ -178,9 +187,25 @@ Which would you like?
 |-------------|--------|
 | < 50% | Proceed normally |
 | 50-60% | Warn user, proceed with caution |
-| 60%+ | **GATE**: Run `/checkpoint`, then `/compact` before proceeding |
+| 60%+ | **GATE**: Run context recovery protocol |
 
 **Hard gate at 60%**: Do not invoke the next phase skill until context is below 60%. This is not a suggestion — degraded context means degraded work quality.
+
+#### Context Recovery Protocol (at 60%+)
+
+**Step 1**: Run `/checkpoint` to save current state
+
+**Step 2**: Choose recovery action based on STATE.md status:
+
+| STATE.md status | Action | Rationale |
+|-----------------|--------|-----------|
+| `in_progress` or `blocked` | `/compact` | Preserve learnings, continue task |
+| `complete` or `idle` | `/clear` | Fresh start, no continuity needed |
+| No STATE.md | `/clear` | Nothing to preserve |
+
+**Step 3**: After `/compact` or `/clear`, the session-init hook automatically injects STATE.md if the task was incomplete. This ensures immediate recovery.
+
+**Why automatic recovery**: The hook detects fresh context (<25%) + active STATE.md status and injects the full state. No manual reload needed.
 
 **Update STATE.md `context_percent`**: After each phase completion, record current utilization from metrics.
 
