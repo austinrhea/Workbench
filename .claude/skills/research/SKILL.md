@@ -1,7 +1,10 @@
 ---
 name: research
+version: 1.0.0
+changelog: Added wave execution, subagent model selection
 description: Understand problem space before proposing changes. Use when exploring unfamiliar code, analyzing requirements, or planning features that need investigation.
 allowed-tools: Read, Grep, Glob, Task, WebFetch
+temperature: 0.3-0.5  # Slight creativity for exploration
 ---
 
 # Research Phase
@@ -30,6 +33,26 @@ Break into composable research areas. Use subagents for parallel exploration:
 - Up to 500 parallel subagents for searches/reads
 - Keep parent context focused on synthesis
 
+**Wave-based execution** — group operations by dependency:
+
+```
+Wave 1 (parallel):     Wave 2 (parallel):     Wave 3 (synthesis):
+┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+│ Glob: find  │        │ Read file A │        │ Analyze     │
+│ all *.ts    │        └─────────────┘        │ patterns    │
+└─────────────┘        ┌─────────────┐        └─────────────┘
+┌─────────────┐   →    │ Read file B │   →
+│ Grep: find  │        └─────────────┘
+│ "pattern"   │        ┌─────────────┐
+└─────────────┘        │ Read file C │
+                       └─────────────┘
+```
+
+**Rules**:
+- Wave 1: Discovery (glob, grep) — all parallel
+- Wave 2: Reading (Task with haiku) — all parallel
+- Wave 3: Synthesis — sequential, in parent context
+
 **Subagent model selection** (10x cost difference):
 
 | Task Type | Model | Why |
@@ -39,7 +62,12 @@ Break into composable research areas. Use subagents for parallel exploration:
 | Code exploration | `sonnet` | Balance speed/understanding |
 | Complex analysis | `opus` | Multi-step reasoning |
 
-Example: `Task(prompt="find all API routes", model="haiku")`
+Example: Launch multiple searches in one message:
+```
+Task(prompt="find all API routes", model="haiku")
+Task(prompt="find all middleware", model="haiku")
+Task(prompt="find auth patterns", model="haiku")
+```
 
 ### 3. Map the Territory
 - Identify files, modules, and dependencies involved
@@ -75,6 +103,18 @@ Use the [findings template](templates/findings.md) structure:
 ## Recommended Approach
 [Brief description of proposed direction]
 ```
+
+**Structured output hint**: For complex research, consider JSON-style output for machine-parseable sections:
+
+```json
+{
+  "files": [{"path": "src/auth.ts", "line": 42, "role": "entry point"}],
+  "patterns": [{"name": "singleton", "usage": "database connection"}],
+  "risks": ["coupling", "missing tests"]
+}
+```
+
+This aids downstream planning tools if integrated.
 
 ## Constraints
 

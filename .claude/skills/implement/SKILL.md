@@ -1,7 +1,10 @@
 ---
 name: implement
+version: 1.0.0
+changelog: Added wave execution, deviation rules, goal-backward verification
 description: Execute approved plan incrementally with verification at each step. Use after plan is approved.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task
+temperature: 0.0  # Deterministic for code generation
 ---
 
 # Implementation Phase
@@ -27,7 +30,29 @@ Read `## Plan` from STATE.md:
 - Run **Verification Commands** after each step
 - Monitor **Risks Identified** during execution
 
-### 2. Execute One Step at a Time
+### 2. Execute Using Wave Pattern
+Group independent operations for efficiency:
+
+**Wave-based execution**:
+```
+Wave 1 (parallel):     Wave 2 (sequential):   Wave 3 (verify):
+┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+│ Edit file A │        │ Build       │        │ Test        │
+└─────────────┘        └──────┬──────┘        └──────┬──────┘
+┌─────────────┐   →           │          →          │
+│ Edit file B │               ▼                     ▼
+└─────────────┘        ┌─────────────┐        ┌─────────────┐
+┌─────────────┐        │ Lint        │        │ Verify      │
+│ Edit file C │        └─────────────┘        └─────────────┘
+└─────────────┘
+```
+
+**Rules**:
+- Wave 1: Independent edits — all parallel in one message
+- Wave 2: Build/lint — sequential (depends on edits)
+- Wave 3: Test/verify — sequential (depends on build)
+
+**Per-step requirements**:
 - Complete step fully before moving to next
 - Verify each step per the plan's criteria
 - Mark steps complete as you go

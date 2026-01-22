@@ -1,5 +1,7 @@
 ---
 name: checkpoint
+version: 1.1.0
+changelog: Added git tagging at phase boundaries
 description: Save current state for session breaks. Includes context health check and recommendations.
 ---
 
@@ -61,18 +63,33 @@ git status --short && git log -1 --oneline
 
 **Why required**: Prevents stale "uncommitted changes" info after commits. The checkpoint is the source of truth for git state.
 
-**Rollback point** (if changes are stable):
-```markdown
-## Rollback Point
-Commit: [hash]
-Command: git checkout [hash] -- [files]
+### 5. Create Git Tag (Phase Boundaries)
+
+At significant checkpoints (phase completion, pre-risky-change), create a tagged rollback point:
+
+```bash
+./scripts/checkpoint-tag.sh [phase-name]
 ```
 
-### 5. Update Docs (If Skills Changed)
+Creates tag: `checkpoint/{phase}-{timestamp}`
+
+**When to tag**:
+- After each phase completion (research, plan, implement)
+- Before risky refactors
+- Before `/compact` (preserves rollback even if context changes)
+
+**Rollback command** (add to STATE.md):
+```markdown
+## Rollback Point
+Tag: checkpoint/research-20260122-143052
+Command: git checkout checkpoint/research-20260122-143052
+```
+
+### 6. Update Docs (If Skills Changed)
 
 If skills were added/modified this session, run `/docs` to update README.md.
 
-### 6. Output Recommendation
+### 7. Output Recommendation
 
 Based on utilization (from metrics) and task status, recommend next action. See `agent_docs/context.md` for threshold guidance.
 

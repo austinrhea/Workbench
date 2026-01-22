@@ -1,5 +1,7 @@
 ---
 name: docs
+version: 1.0.0
+changelog: Initial docs generator for skill table
 description: Update README.md commands table from skills.
 ---
 

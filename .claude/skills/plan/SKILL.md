@@ -1,7 +1,10 @@
 ---
 name: plan
+version: 1.0.0
+changelog: Initial planning skill with handoff format
 description: Create specific implementation steps for review. Use after research is complete and before writing code.
 allowed-tools: Read, Write, Glob, Grep
+temperature: 0.2  # Mostly deterministic, slight flexibility
 ---
 
 # Planning Phase
@@ -71,6 +74,12 @@ Use the [plan format template](templates/plan-format.md):
 
 - [ ] Step 3: ...
 ```
+
+**Task schema** (from style.md): Each task should have:
+- **Action**: What to do and why
+- **Files**: Specific paths (`src/auth.ts:42`)
+- **Verify**: Testable command
+- **Done**: Measurable acceptance criteria
 
 ### 6. Identify Decision Points
 

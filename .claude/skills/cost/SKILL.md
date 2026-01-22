@@ -1,5 +1,7 @@
 ---
 name: cost
+version: 1.0.0
+changelog: Initial quick metrics check
 description: Quick context health check. See /checkpoint for full state management.
 ---
 

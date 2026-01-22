@@ -1,5 +1,7 @@
 ---
 name: workflow
+version: 1.0.0
+changelog: Initial structured workflow with gates and state management
 description: Entry point for task execution. Routes to research, plan, implement, or debug based on task type and existing state. Orchestrates phase transitions after approval.
 disable-model-invocation: true
 allowed-tools: Read, Write, Glob, Skill, AskUserQuestion
@@ -200,6 +202,21 @@ Which would you like?
 | < 50% | Proceed normally |
 | 50-60% | Warn user, proceed with caution |
 | 60%+ | **GATE**: Run context recovery protocol |
+
+**Context estimation**: Before starting a phase, estimate its cost:
+
+```bash
+./scripts/estimate-context.sh [phase]
+```
+
+| Phase | Typical Cost |
+|-------|--------------|
+| research | +15% |
+| plan | +10% |
+| implement | +20% |
+| debug | +15% |
+
+If projected utilization exceeds 60%, run recovery protocol BEFORE starting the phase.
 
 **Hard gate at 60%**: Do not invoke the next phase skill until context is below 60%. This is not a suggestion — degraded context means degraded work quality.
 

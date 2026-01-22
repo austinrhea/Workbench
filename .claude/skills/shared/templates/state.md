@@ -41,5 +41,14 @@ ${GIT_STATE:-[Run git status to populate]}
 ## Checkpoint
 ${CHECKPOINT:-[Last known good state]}
 
+## Event Log
+<!-- Append-only log for reproducibility. Each entry: timestamp | event | details -->
+${EVENT_LOG:-}
+<!-- Example:
+- 2026-01-22T14:30 | phase:research | Started research phase
+- 2026-01-22T14:45 | decision | Chose approach A over B
+- 2026-01-22T15:00 | phase:plan | Research complete, starting plan
+-->
+
 ## Next Steps
 ${NEXT_STEPS:-${PHASE} in progress}

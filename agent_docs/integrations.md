@@ -230,6 +230,25 @@ The `scripts/retry-limits.sh` script implements failure tracking:
 
 This aligns with `/implement.md`: "After 2-3 consecutive failures, escalate to human."
 
+### Automation Scripts
+
+| Script | Purpose | Exit Codes |
+|--------|---------|------------|
+| `lint-state.sh` | Validate STATE.md structure | 0=valid, 1=errors |
+| `checkpoint-tag.sh` | Create git tag at checkpoint | 0=success, 1=failure |
+| `estimate-context.sh` | Project context cost for phase | 0=OK, 1=caution, 2=warning |
+| `compact-error.sh` | Summarize error for context | Always 0 |
+| `analyze-metrics.sh` | Generate session metrics report | 0=success |
+| `lint-docs.sh` | Check principles vs skills drift | 0=pass, 1=errors |
+
+### Integration Tests
+
+```bash
+bash tests/workflow-test.sh
+```
+
+Validates: STATE.md linting, context estimation, error compaction, metrics analysis, skill structure.
+
 ## Persistence
 
 ### Tier 1: STATE.md (Default)

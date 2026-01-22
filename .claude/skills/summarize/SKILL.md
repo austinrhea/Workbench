@@ -1,5 +1,7 @@
 ---
 name: summarize
+version: 1.0.0
+changelog: Initial FILTER-CHUNK-STITCH-VERIFY pattern
 description: Prepare context for compaction. Run before /compact to ensure critical state survives.
 ---
 

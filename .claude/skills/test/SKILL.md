@@ -1,5 +1,7 @@
 ---
 name: test
+version: 1.0.0
+changelog: Initial test runner with run_silent pattern
 description: Run tests with context-efficient output.
 ---
 

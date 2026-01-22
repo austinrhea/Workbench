@@ -122,8 +122,26 @@ The workflow includes several automatic behaviors:
 | **Post-compact recovery** | Fresh context + active STATE.md | Auto-injects state after `/compact` |
 | **Session resume** | Stale STATE.md (>1h) | Prompts continuation on return |
 | **Context warnings** | 60%+ utilization | Suggests `/summarize` then `/compact` |
+| **Context estimation** | Before each phase | Projects utilization, warns if >50% |
+| **Git tagging** | At checkpoints | Creates rollback points |
+| **Wave execution** | Research/implement | Parallelizes independent operations |
 
 **Pre-compact checklist**: Run `bash scripts/pre-compact.sh` before `/compact` to verify STATE.md is current.
+
+### New Scripts
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `lint-state.sh` | Validate STATE.md structure | `bash scripts/lint-state.sh` |
+| `checkpoint-tag.sh` | Create git checkpoint tag | `bash scripts/checkpoint-tag.sh [phase]` |
+| `estimate-context.sh` | Project context cost | `bash scripts/estimate-context.sh [phase]` |
+| `compact-error.sh` | Summarize error output | `cmd 2>&1 \| bash scripts/compact-error.sh` |
+| `analyze-metrics.sh` | Session metrics report | `bash scripts/analyze-metrics.sh` |
+| `lint-docs.sh` | Check doc/skill drift | `bash scripts/lint-docs.sh` |
+
+### Integration Tests
+
+Run `bash tests/workflow-test.sh` to verify workflow components.
 
 ## Phase-Boundary Approval Gates
 

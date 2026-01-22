@@ -1,7 +1,10 @@
 ---
 name: debug
+version: 1.0.0
+changelog: Initial debug skill with systematic diagnosis
 description: Diagnose bugs systematically before proposing fixes. Use when something is broken, failing, erroring, or not working as expected.
 allowed-tools: Read, Grep, Glob, Bash, Task
+temperature: 0.2  # Mostly systematic, slight exploration
 ---
 
 # Debug Phase
