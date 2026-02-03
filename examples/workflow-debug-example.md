@@ -1,5 +1,7 @@
 # Workflow Example: Debugging a Python API Integration
 
+[![Run Workflow](https://img.shields.io/badge/▶_Run_Workflow-4CAF50?style=for-the-badge)](# "Run this workflow")
+
 This document demonstrates the **Debug → Implement** workflow using a realistic scenario: diagnosing and fixing an intermittent API error in a Python FastAPI application.
 
 ## What You'll Learn

@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Flow Editor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0d0d0d;
+      --bg-secondary: #141414;
+      --bg-tertiary: #1a1a1a;
+      --border: #2a2a2a;
+      --text-primary: #e8e8e8;
+      --text-secondary: #888;
+      --text-muted: #555;
+      --accent: #d97757;
+      --accent-hover: #e8956f;
+      --accent-dim: rgba(217, 119, 87, 0.15);
+      --green: #4ade80;
+      --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      font-size: 13px;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-container {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      transition: border-color 0.15s;
+    }
+
+    #search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    #search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    #sidebar h2 {
+      padding: 16px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .node-palette {
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .palette-item {
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: grab;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+
+    .palette-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .palette-item .icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    /* Toolbar */
+    #toolbar {
+      padding: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #toolbar button {
+      padding: 10px;
+      background: var(--accent);
+      border: none;
+      border-radius: 4px;
+      color: var(--bg-primary);
+      cursor: pointer;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.15s;
+    }
+
+    #toolbar button:hover {
+      background: var(--accent-hover);
+    }
+
+    #toolbar button.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    #toolbar button.secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Canvas */
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* Nodes */
+    .node {
+      position: absolute;
+      min-width: 200px;
+      max-width: 280px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: move;
+      user-select: none;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .node:hover {
+      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    .node.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent), 0 6px 28px rgba(217, 119, 87, 0.25);
+    }
+
+    .node-header {
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border-radius: 5px 5px 0 0;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.3px;
+    }
+
+    .node-header .type-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .node-description {
+      padding: 8px 14px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .node-content {
+      padding: 12px 14px;
+    }
+
+    .node-tools {
+      padding: 8px 14px;
+      font-size: 9px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 0 0 5px 5px;
+    }
+
+    .node-content input,
+    .node-content textarea,
+    .node-content select {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+
+    .node-content input:focus,
+    .node-content textarea:focus,
+    .node-content select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .node-content textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .node-content label {
+      display: block;
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Ports */
+    .ports {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      position: relative;
+    }
+
+    .port {
+      width: 12px;
+      height: 12px;
+      background: var(--bg-primary);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      cursor: crosshair;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .port:hover, .port.snap-target {
+      transform: scale(1.5);
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .port.snap-target {
+      animation: pulse 0.5s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 8px var(--accent); }
+      50% { box-shadow: 0 0 16px var(--accent); }
+    }
+
+    .port.input { margin-left: -6px; }
+    .port.output { margin-right: -6px; }
+
+    /* Connection lines */
+    .connection {
+      stroke: var(--accent);
+      stroke-width: 2;
+      fill: none;
+      pointer-events: stroke;
+    }
+
+    .connection:hover {
+      stroke-width: 3;
+      cursor: pointer;
+    }
+
+    .connection.temp {
+      stroke-dasharray: 6, 6;
+      stroke-width: 2;
+      opacity: 0.7;
+      animation: dash 0.5s linear infinite;
+    }
+
+    .connection.temp.snapping {
+      stroke-dasharray: 4, 4;
+      opacity: 1;
+      stroke-width: 2.5;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -12; }
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 24px;
+      min-width: 420px;
+      max-width: 600px;
+    }
+
+    .modal h3 {
+      margin-bottom: 16px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+    }
+
+    .modal textarea {
+      width: 100%;
+      height: 300px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--green);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .modal textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: flex-end;
+    }
+
+    .modal button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modal button.primary {
+      background: var(--accent);
+      color: var(--bg-primary);
+      font-weight: 600;
+    }
+
+    .modal button.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .modal button.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .modal button.secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Workflow list */
+    .workflow-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+
+    .workflow-item {
+      padding: 10px 12px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s;
+    }
+
+    .workflow-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .workflow-item .name {
+      font-weight: 500;
+      font-size: 12px;
+    }
+
+    .workflow-item .date {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      font-size: 12px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Agent type colors - muted for terminal feel */
+    .agent-research { background: #3b5998; }
+    .agent-code { background: #6b4c9a; }
+    .agent-review { background: #9b4dca; }
+    .agent-test { background: #2d9cdb; }
+    .agent-deploy { background: #27ae60; }
+    .agent-custom { background: var(--accent); }
+
+    /* Skill colors - muted */
+    .skill-research { background: #3b5998; }
+    .skill-plan { background: #6b4c9a; }
+    .skill-implement { background: #27ae60; }
+    .skill-debug { background: #c0392b; }
+    .skill-test { background: #2d9cdb; }
+    .skill-checkpoint { background: var(--accent); }
+    .skill-summarize { background: #8e44ad; }
+    .skill-cost { background: #2980b9; }
+    .skill-docs { background: #d35400; }
+    .skill-workflow { background: #f39c12; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab:hover {
+      color: var(--text-secondary);
+      background: var(--accent-dim);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .palette-item .desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .palette-item.skill-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .palette-item.skill-item .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .no-results {
+      padding: 12px;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Terminal cursor blink for inputs */
+    .node-content input:focus,
+    .node-content textarea:focus {
+      caret-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="sidebar">
+      <div class="search-container">
+        <input type="text" id="search-input" placeholder="/ search..." oninput="filterPalette(this.value)">
+      </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="agents">Agents</div>
+        <div class="tab" data-tab="skills">Skills</div>
+      </div>
+      <div class="tab-content active" id="agents-tab">
+        <div class="node-palette" id="palette"></div>
+      </div>
+      <div class="tab-content" id="skills-tab">
+        <div class="node-palette" id="skills-palette"></div>
+      </div>
+      <div id="toolbar">
+        <button onclick="saveWorkflow()">Save Workflow</button>
+        <button class="secondary" onclick="loadWorkflow()">Load Workflow</button>
+        <button class="secondary" onclick="exportWorkflow()">Export JSON</button>
+        <button class="secondary" onclick="clearCanvas()">Clear</button>
+      </div>
+    </div>
+    <div id="canvas-container">
+      <svg id="connections"></svg>
+      <div id="canvas"></div>
+    </div>
+  </div>
+
+  <script>
+    // Agent types
+    const AGENT_TYPES = [
+      { id: 'research', name: 'Research Agent', color: 'agent-research', icon: '>',
+        fields: [{ name: 'query', type: 'textarea', label: 'Research Query' }] },
+      { id: 'code', name: 'Code Agent', color: 'agent-code', icon: '$',
+        fields: [{ name: 'task', type: 'textarea', label: 'Coding Task' }, { name: 'language', type: 'text', label: 'Language' }] },
+      { id: 'review', name: 'Review Agent', color: 'agent-review', icon: '*',
+        fields: [{ name: 'criteria', type: 'textarea', label: 'Review Criteria' }] },
+      { id: 'test', name: 'Test Agent', color: 'agent-test', icon: '#',
+        fields: [{ name: 'testType', type: 'select', label: 'Test Type', options: ['unit', 'integration', 'e2e'] }] },
+      { id: 'deploy', name: 'Deploy Agent', color: 'agent-deploy', icon: '^',
+        fields: [{ name: 'target', type: 'text', label: 'Deploy Target' }] },
+      { id: 'custom', name: 'Custom Agent', color: 'agent-custom', icon: '@',
+        fields: [{ name: 'prompt', type: 'textarea', label: 'System Prompt' }, { name: 'model', type: 'text', label: 'Model' }] },
+    ];
+
+    // Skills from .claude/skills
+    const SKILLS = [
+      { id: 'skill-research', name: 'research', color: 'skill-research', icon: '>',
+        description: 'Understand problem space before proposing changes',
+        tools: ['Read', 'Grep', 'Glob', 'Task', 'WebFetch'],
+        fields: [{ name: 'query', type: 'textarea', label: 'Research Query' }] },
+      { id: 'skill-plan', name: 'plan', color: 'skill-plan', icon: '~',
+        description: 'Create specific implementation steps for review',
+        tools: ['Read', 'Write', 'Glob', 'Grep'],
+        fields: [{ name: 'task', type: 'textarea', label: 'Planning Task' }] },
+      { id: 'skill-implement', name: 'implement', color: 'skill-implement', icon: '+',
+        description: 'Execute approved plan incrementally with verification',
+        tools: ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'Task'],
+        fields: [{ name: 'plan', type: 'textarea', label: 'Plan Reference' }] },
+      { id: 'skill-debug', name: 'debug', color: 'skill-debug', icon: '!',
+        description: 'Diagnose bugs systematically before proposing fixes',
+        tools: ['Read', 'Grep', 'Glob', 'Bash'],
+        fields: [{ name: 'issue', type: 'textarea', label: 'Issue Description' }] },
+      { id: 'skill-test', name: 'test', color: 'skill-test', icon: '#',
+        description: 'Run tests with context-efficient output',
+        tools: ['Bash', 'Read'],
+        fields: [{ name: 'testCmd', type: 'text', label: 'Test Command' }] },
+      { id: 'skill-checkpoint', name: 'checkpoint', color: 'skill-checkpoint', icon: '%',
+        description: 'Save current state for session breaks',
+        tools: ['Read', 'Write'],
+        fields: [] },
+      { id: 'skill-summarize', name: 'summarize', color: 'skill-summarize', icon: '&',
+        description: 'Prepare context for compaction',
+        tools: ['Read', 'Write'],
+        fields: [] },
+      { id: 'skill-cost', name: 'cost', color: 'skill-cost', icon: '$',
+        description: 'Quick context health check',
+        tools: ['Bash'],
+        fields: [] },
+      { id: 'skill-docs', name: 'docs', color: 'skill-docs', icon: '?',
+        description: 'Update README.md commands table from skills',
+        tools: ['Read', 'Write', 'Glob'],
+        fields: [] },
+      { id: 'skill-workflow', name: 'workflow', color: 'skill-workflow', icon: '*',
+        description: 'Workflow automation utilities',
+        tools: ['Read', 'Write', 'Bash'],
+        fields: [{ name: 'mode', type: 'select', label: 'Mode', options: ['quick', 'standard', 'thorough'] }] },
+    ];
+
+    // Combined types for node lookup
+    const ALL_TYPES = [...AGENT_TYPES, ...SKILLS];
+
+    // State
+    let nodes = [];
+    let connections = [];
+    let selectedNode = null;
+    let draggingNode = null;
+    let dragOffset = { x: 0, y: 0 };
+    let connectingFrom = null;
+    let tempLine = null;
+    let nodeIdCounter = 0;
+    let snapTarget = null;
+    const SNAP_DISTANCE = 35;
+
+    // DOM elements
+    const canvas = document.getElementById('canvas');
+    const connectionsSvg = document.getElementById('connections');
+    const palette = document.getElementById('palette');
+    const skillsPalette = document.getElementById('skills-palette');
+
+    // Initialize
+    function init() {
+      renderPalette();
+      renderSkillsPalette();
+      setupTabs();
+      setupEventListeners();
+      resizeSvg();
+      loadFromStorage();
+    }
+
+    function setupTabs() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+        });
+      });
+    }
+
+    function filterPalette(query) {
+      const q = query.toLowerCase().trim();
+      renderPalette(q);
+      renderSkillsPalette(q);
+    }
+
+    function renderPalette(filter = '') {
+      const filtered = AGENT_TYPES.filter(type =>
+        !filter || type.name.toLowerCase().includes(filter) || type.id.toLowerCase().includes(filter)
+      );
+
+      palette.innerHTML = filtered.map(type => `
+        <div class="palette-item" draggable="true" data-type="${type.id}">
+          <div class="icon ${type.color}">${type.icon}</div>
+          ${type.name}
+        </div>
+      `).join('') || '<div class="no-results">No matches</div>';
+
+      palette.querySelectorAll('.palette-item').forEach(item => {
+        item.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('nodeType', item.dataset.type);
+        });
+        item.addEventListener('dblclick', () => {
+          createNodeAtCenter(item.dataset.type);
+        });
+      });
+    }
+
+    function renderSkillsPalette(filter = '') {
+      const filtered = SKILLS.filter(skill =>
+        !filter || skill.name.toLowerCase().includes(filter) ||
+        (skill.description && skill.description.toLowerCase().includes(filter)) ||
+        (skill.tools && skill.tools.some(t => t.toLowerCase().includes(filter)))
+      );
+
+      skillsPalette.innerHTML = filtered.map(skill => `
+        <div class="palette-item skill-item" draggable="true" data-type="${skill.id}">
+          <div class="header">
+            <div class="icon ${skill.color}">${skill.icon}</div>
+            /${skill.name}
+          </div>
+          <div class="desc">${skill.description}</div>
+        </div>
+      `).join('') || '<div class="no-results">No matches</div>';
+
+      skillsPalette.querySelectorAll('.palette-item').forEach(item => {
+        item.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('nodeType', item.dataset.type);
+        });
+        item.addEventListener('dblclick', () => {
+          createNodeAtCenter(item.dataset.type);
+        });
+      });
+    }
+
+    function createNodeAtCenter(typeId) {
+      const container = canvas.parentElement;
+      const x = (container.clientWidth / 2) - 90 + (Math.random() * 100 - 50);
+      const y = (container.clientHeight / 2) - 60 + (Math.random() * 100 - 50);
+      createNode(typeId, x, y);
+    }
+
+    function setupEventListeners() {
+      // Canvas drop
+      canvas.parentElement.addEventListener('dragover', e => e.preventDefault());
+      canvas.parentElement.addEventListener('drop', e => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData('nodeType');
+        if (type) {
+          const rect = canvas.parentElement.getBoundingClientRect();
+          createNode(type, e.clientX - rect.left - 80, e.clientY - rect.top - 30);
+        }
+      });
+
+      // Mouse move for dragging and connecting
+      document.addEventListener('mousemove', e => {
+        if (draggingNode) {
+          const rect = canvas.parentElement.getBoundingClientRect();
+          draggingNode.x = e.clientX - rect.left - dragOffset.x;
+          draggingNode.y = e.clientY - rect.top - dragOffset.y;
+          updateNodePosition(draggingNode);
+          renderConnections();
+        }
+        if (connectingFrom) {
+          const rect = canvas.parentElement.getBoundingClientRect();
+          const mouseX = e.clientX - rect.left;
+          const mouseY = e.clientY - rect.top;
+
+          // Check for nearby input ports to snap to
+          const nearestPort = findNearestInputPort(mouseX, mouseY, connectingFrom.nodeId);
+
+          // Clear previous snap target
+          if (snapTarget && snapTarget !== nearestPort?.element) {
+            snapTarget.classList.remove('snap-target');
+            tempLine?.classList.remove('snapping');
+          }
+
+          if (nearestPort && nearestPort.distance < SNAP_DISTANCE) {
+            snapTarget = nearestPort.element;
+            snapTarget.classList.add('snap-target');
+            tempLine?.classList.add('snapping');
+            updateTempLine(nearestPort.x, nearestPort.y);
+          } else {
+            snapTarget = null;
+            updateTempLine(mouseX, mouseY);
+          }
+        }
+      });
+
+      document.addEventListener('mouseup', e => {
+        draggingNode = null;
+        if (connectingFrom) {
+          // If snapped to a port, create connection
+          if (snapTarget) {
+            const targetNodeId = snapTarget.dataset.node;
+            if (targetNodeId && targetNodeId !== connectingFrom.nodeId) {
+              createConnection(connectingFrom.nodeId, targetNodeId);
+            }
+            snapTarget.classList.remove('snap-target');
+            snapTarget = null;
+          }
+          connectingFrom = null;
+          if (tempLine) tempLine.remove();
+          tempLine = null;
+        }
+      });
+
+      // Keyboard
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (selectedNode && !e.target.matches('input, textarea')) {
+            deleteNode(selectedNode);
+          }
+        }
+      });
+
+      // Click outside to deselect
+      canvas.parentElement.addEventListener('click', e => {
+        if (e.target === canvas || e.target === canvas.parentElement) {
+          deselectAll();
+        }
+      });
+
+      window.addEventListener('resize', resizeSvg);
+    }
+
+    function resizeSvg() {
+      const container = canvas.parentElement;
+      connectionsSvg.setAttribute('width', container.clientWidth);
+      connectionsSvg.setAttribute('height', container.clientHeight);
+    }
+
+    function createNode(typeId, x, y) {
+      const type = ALL_TYPES.find(t => t.id === typeId);
+      if (!type) return;
+
+      const node = {
+        id: `node_${nodeIdCounter++}`,
+        type: typeId,
+        x, y,
+        data: {}
+      };
+
+      type.fields.forEach(f => {
+        node.data[f.name] = '';
+      });
+
+      nodes.push(node);
+      renderNode(node);
+      saveToStorage();
+    }
+
+    function renderNode(node) {
+      const type = ALL_TYPES.find(t => t.id === node.type);
+      const el = document.createElement('div');
+      el.className = 'node';
+      el.id = node.id;
+      el.style.left = node.x + 'px';
+      el.style.top = node.y + 'px';
+
+      const isSkill = node.type.startsWith('skill-');
+      const displayName = isSkill ? `/${type.name}` : type.name;
+
+      el.innerHTML = `
+        <div class="node-header">
+          <span class="type-badge ${type.color}">${type.icon}</span>
+          <span>${displayName}</span>
+        </div>
+        ${type.description ? `<div class="node-description">${type.description}</div>` : ''}
+        ${type.fields.length ? `<div class="node-content">
+          ${type.fields.map(f => renderField(f, node.data[f.name])).join('')}
+        </div>` : ''}
+        ${type.tools ? `<div class="node-tools">Tools: ${type.tools.join(', ')}</div>` : ''}
+        <div class="ports">
+          <div class="port input" data-port="input" data-node="${node.id}"></div>
+          <div class="port output" data-port="output" data-node="${node.id}"></div>
+        </div>
+      `;
+
+      // Node selection
+      el.addEventListener('mousedown', e => {
+        if (e.target.classList.contains('port')) return;
+        selectNode(node);
+        if (!e.target.matches('input, textarea, select')) {
+          draggingNode = node;
+          const rect = el.getBoundingClientRect();
+          const containerRect = canvas.parentElement.getBoundingClientRect();
+          dragOffset = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+          };
+        }
+      });
+
+      // Port interactions
+      el.querySelectorAll('.port').forEach(port => {
+        port.addEventListener('mousedown', e => {
+          e.stopPropagation();
+          if (port.dataset.port === 'output') {
+            connectingFrom = { nodeId: node.id, port: 'output' };
+            createTempLine(getPortPosition(node.id, 'output'));
+          }
+        });
+
+        port.addEventListener('mouseup', e => {
+          if (connectingFrom && port.dataset.port === 'input' && connectingFrom.nodeId !== node.id) {
+            createConnection(connectingFrom.nodeId, node.id);
+          }
+        });
+      });
+
+      // Field change handlers
+      el.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('change', e => {
+          node.data[e.target.dataset.field] = e.target.value;
+          saveToStorage();
+        });
+        input.addEventListener('mousedown', e => e.stopPropagation());
+      });
+
+      canvas.appendChild(el);
+    }
+
+    function renderField(field, value) {
+      if (field.type === 'select') {
+        return `
+          <label>${field.label}</label>
+          <select data-field="${field.name}">
+            ${field.options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('')}
+          </select>
+        `;
+      }
+      if (field.type === 'textarea') {
+        return `
+          <label>${field.label}</label>
+          <textarea data-field="${field.name}" placeholder="${field.label}">${value || ''}</textarea>
+        `;
+      }
+      return `
+        <label>${field.label}</label>
+        <input type="text" data-field="${field.name}" value="${value || ''}" placeholder="${field.label}">
+      `;
+    }
+
+    function updateNodePosition(node) {
+      const el = document.getElementById(node.id);
+      if (el) {
+        el.style.left = node.x + 'px';
+        el.style.top = node.y + 'px';
+      }
+    }
+
+    function selectNode(node) {
+      deselectAll();
+      selectedNode = node;
+      document.getElementById(node.id)?.classList.add('selected');
+    }
+
+    function deselectAll() {
+      selectedNode = null;
+      document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+    }
+
+    function deleteNode(node) {
+      connections = connections.filter(c => c.from !== node.id && c.to !== node.id);
+      nodes = nodes.filter(n => n.id !== node.id);
+      document.getElementById(node.id)?.remove();
+      selectedNode = null;
+      renderConnections();
+      saveToStorage();
+    }
+
+    function createConnection(fromId, toId) {
+      if (connections.some(c => c.from === fromId && c.to === toId)) return;
+      connections.push({ from: fromId, to: toId });
+      renderConnections();
+      saveToStorage();
+    }
+
+    function getPortPosition(nodeId, portType) {
+      const nodeEl = document.getElementById(nodeId);
+      if (!nodeEl) return { x: 0, y: 0 };
+
+      const port = nodeEl.querySelector(`.port.${portType}`);
+      const containerRect = canvas.parentElement.getBoundingClientRect();
+      const portRect = port.getBoundingClientRect();
+
+      return {
+        x: portRect.left + portRect.width/2 - containerRect.left,
+        y: portRect.top + portRect.height/2 - containerRect.top
+      };
+    }
+
+    function findNearestInputPort(mouseX, mouseY, excludeNodeId) {
+      const containerRect = canvas.parentElement.getBoundingClientRect();
+      let nearest = null;
+      let minDistance = Infinity;
+
+      nodes.forEach(node => {
+        if (node.id === excludeNodeId) return;
+
+        const nodeEl = document.getElementById(node.id);
+        if (!nodeEl) return;
+
+        const port = nodeEl.querySelector('.port.input');
+        if (!port) return;
+
+        const portRect = port.getBoundingClientRect();
+        const portX = portRect.left + portRect.width/2 - containerRect.left;
+        const portY = portRect.top + portRect.height/2 - containerRect.top;
+
+        // Check if mouse is over the node itself
+        const nodeRect = nodeEl.getBoundingClientRect();
+        const nodeLeft = nodeRect.left - containerRect.left;
+        const nodeTop = nodeRect.top - containerRect.top;
+        const nodeRight = nodeLeft + nodeRect.width;
+        const nodeBottom = nodeTop + nodeRect.height;
+
+        const isOverNode = mouseX >= nodeLeft && mouseX <= nodeRight &&
+                           mouseY >= nodeTop && mouseY <= nodeBottom;
+
+        // If over node, distance is 0 (highest priority snap)
+        // Otherwise use actual distance to port
+        const distance = isOverNode ? 0 :
+          Math.sqrt(Math.pow(mouseX - portX, 2) + Math.pow(mouseY - portY, 2));
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearest = { x: portX, y: portY, distance, element: port, nodeId: node.id };
+        }
+      });
+
+      return nearest;
+    }
+
+    function renderConnections() {
+      connectionsSvg.innerHTML = '';
+      connections.forEach(conn => {
+        const from = getPortPosition(conn.from, 'output');
+        const to = getPortPosition(conn.to, 'input');
+        const path = createCurvePath(from, to);
+        path.classList.add('connection');
+        path.addEventListener('click', () => {
+          connections = connections.filter(c => c !== conn);
+          renderConnections();
+          saveToStorage();
+        });
+        connectionsSvg.appendChild(path);
+      });
+    }
+
+    function createCurvePath(from, to) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const dx = Math.abs(to.x - from.x) * 0.5;
+      const d = `M ${from.x} ${from.y} C ${from.x + dx} ${from.y}, ${to.x - dx} ${to.y}, ${to.x} ${to.y}`;
+      path.setAttribute('d', d);
+      return path;
+    }
+
+    function createTempLine(from) {
+      tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      tempLine.classList.add('connection', 'temp');
+      connectionsSvg.appendChild(tempLine);
+    }
+
+    function updateTempLine(toX, toY) {
+      if (!tempLine || !connectingFrom) return;
+      const from = getPortPosition(connectingFrom.nodeId, 'output');
+      const dx = Math.abs(toX - from.x) * 0.5;
+      const d = `M ${from.x} ${from.y} C ${from.x + dx} ${from.y}, ${toX - dx} ${toY}, ${toX} ${toY}`;
+      tempLine.setAttribute('d', d);
+    }
+
+    // Storage
+    function saveToStorage() {
+      localStorage.setItem('agentflow_autosave', JSON.stringify({ nodes, connections }));
+    }
+
+    function loadFromStorage() {
+      const saved = localStorage.getItem('agentflow_autosave');
+      if (saved) {
+        const data = JSON.parse(saved);
+        data.nodes.forEach(n => {
+          nodes.push(n);
+          nodeIdCounter = Math.max(nodeIdCounter, parseInt(n.id.split('_')[1]) + 1);
+          renderNode(n);
+        });
+        connections = data.connections;
+        renderConnections();
+      }
+    }
+
+    // Workflow management
+    function saveWorkflow() {
+      const name = prompt('Workflow name:');
+      if (!name) return;
+
+      const workflows = JSON.parse(localStorage.getItem('agentflow_workflows') || '{}');
+      workflows[name] = {
+        nodes: [...nodes],
+        connections: [...connections],
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem('agentflow_workflows', JSON.stringify(workflows));
+      showToast(`Saved "${name}"`);
+    }
+
+    function loadWorkflow() {
+      const workflows = JSON.parse(localStorage.getItem('agentflow_workflows') || '{}');
+      const names = Object.keys(workflows);
+
+      if (names.length === 0) {
+        showToast('No saved workflows');
+        return;
+      }
+
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal">
+          <h3>Load Workflow</h3>
+          <input type="text" id="workflow-search" placeholder="/ search workflows..." style="width:100%;padding:8px 10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:3px;color:var(--text-primary);font-size:12px;font-family:var(--font-mono);margin-bottom:12px;">
+          <div class="workflow-list" id="workflow-list"></div>
+          <div class="modal-buttons">
+            <button class="secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      const listEl = modal.querySelector('#workflow-list');
+      const searchEl = modal.querySelector('#workflow-search');
+
+      function renderWorkflowList(filter = '') {
+        const filtered = names.filter(name =>
+          !filter || name.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        listEl.innerHTML = filtered.length ? filtered.map(name => `
+          <div class="workflow-item" data-name="${name}">
+            <span class="name">${name}</span>
+            <span class="date">${new Date(workflows[name].savedAt).toLocaleDateString()}</span>
+          </div>
+        `).join('') : '<div class="no-results">No matches</div>';
+
+        listEl.querySelectorAll('.workflow-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const data = workflows[item.dataset.name];
+            clearCanvas();
+            data.nodes.forEach(n => {
+              nodes.push(n);
+              nodeIdCounter = Math.max(nodeIdCounter, parseInt(n.id.split('_')[1]) + 1);
+              renderNode(n);
+            });
+            connections = data.connections;
+            renderConnections();
+            saveToStorage();
+            modal.remove();
+            showToast(`Loaded "${item.dataset.name}"`);
+          });
+        });
+      }
+
+      searchEl.addEventListener('input', e => renderWorkflowList(e.target.value));
+      renderWorkflowList();
+
+      document.body.appendChild(modal);
+      searchEl.focus();
+    }
+
+    function exportWorkflow() {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal">
+          <h3>Export/Import JSON</h3>
+          <textarea id="export-json">${JSON.stringify({ nodes, connections }, null, 2)}</textarea>
+          <div class="modal-buttons">
+            <button class="secondary" onclick="importFromModal()">Import</button>
+            <button class="secondary" onclick="copyToClipboard()">Copy</button>
+            <button class="primary" onclick="this.closest('.modal-overlay').remove()">Close</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function importFromModal() {
+      try {
+        const data = JSON.parse(document.getElementById('export-json').value);
+        clearCanvas();
+        data.nodes.forEach(n => {
+          nodes.push(n);
+          nodeIdCounter = Math.max(nodeIdCounter, parseInt(n.id.split('_')[1]) + 1);
+          renderNode(n);
+        });
+        connections = data.connections;
+        renderConnections();
+        saveToStorage();
+        document.querySelector('.modal-overlay')?.remove();
+        showToast('Imported successfully');
+      } catch (e) {
+        showToast('Invalid JSON');
+      }
+    }
+
+    function copyToClipboard() {
+      const textarea = document.getElementById('export-json');
+      textarea.select();
+      document.execCommand('copy');
+      showToast('Copied to clipboard');
+    }
+
+    function clearCanvas() {
+      nodes.forEach(n => document.getElementById(n.id)?.remove());
+      nodes = [];
+      connections = [];
+      connectionsSvg.innerHTML = '';
+      saveToStorage();
+    }
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
